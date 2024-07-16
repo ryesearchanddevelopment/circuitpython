@@ -435,6 +435,9 @@ endif
 ifeq ($(CIRCUITPY_WIFI),1)
 SRC_PATTERNS += wifi/%
 endif
+ifeq ($(CIRCUITPY_OPENTHREAD),1)
+SRC_PATTERNS += openthread/%
+endif
 ifeq ($(CIRCUITPY_ZLIB),1)
 SRC_PATTERNS += zlib/%
 endif
@@ -585,6 +588,7 @@ $(filter $(SRC_PATTERNS), \
 	supervisor/StatusBar.c \
 	wifi/AuthMode.c \
 	wifi/Packet.c \
+	openthread/__init__.c \
 )
 
 ifeq ($(CIRCUITPY_SAFEMODE_PY),1)

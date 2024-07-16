@@ -106,6 +106,10 @@
 #include "shared-bindings/wifi/__init__.h"
 #endif
 
+#if CIRCUITPY_OPENTHREAD
+#include "shared-bindings/openthread/__init__.h"
+#endif
+
 #if CIRCUITPY_BOOT_COUNTER
 #include "shared-bindings/nvm/ByteArray.h"
 uint8_t value_out = 0;
