@@ -5,6 +5,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "shared-bindings/openthread/__init__.h"
+#include "shared-bindings/openthread/PendingDataset.h"
 
 //| """
 //| The `openthread` module provides necessary low-level functionality for managing

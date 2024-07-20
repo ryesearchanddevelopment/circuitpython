@@ -8,7 +8,5 @@
 
 #include "py/objstr.h"
 
-void common_hal_thread_init(bool user_initiated);
-void common_hal_thread_gc_collect(void);
 
 void thread_user_reset(void);

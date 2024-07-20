@@ -48,6 +48,7 @@ component:
 - {id: bluetooth_feature_scanner}
 - {id: component_catalog}
 - {id: app_assert}
+- {id: ot_stack_ftd}
 requires:
 - condition: [brd2601b]
   name: custom_brd2601b_cp_support
