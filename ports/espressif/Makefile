@@ -132,7 +132,9 @@ INC += \
 	-isystem esp-idf/components/ulp/ulp_common/include/$(IDF_TARGET) \
 	-isystem esp-idf/components/$(IDF_TARGET_ARCH)/include \
 	-isystem esp-idf/components/$(IDF_TARGET_ARCH)/$(IDF_TARGET)/include \
-	-isystem esp-protocols/components/mdns/include
+	-isystem esp-protocols/components/mdns/include \
+	-isystem esp-idf/components/openthread/include \
+	-isystem esp-idf/components/openthread/openthread/include
 
 CFLAGS += \
 	-DHAVE_CONFIG_H \
@@ -532,6 +534,9 @@ ifneq ($(CIRCUITPY_PARALLELDISPLAYBUS),0)
 endif
 ifneq ($(CIRCUITPY_USB_DEVICE),0)
 	ESP_IDF_COMPONENTS_LINK += usb
+endif
+ifneq ($(CIRCUITPY_OPENTHREAD),0)
+	ESP_IDF_COMPONENTS_LINK += openthread
 endif
 
 ESP_IDF_COMPONENTS_EXPANDED = $(foreach component, $(ESP_IDF_COMPONENTS_LINK), $(BUILD)/esp-idf/esp-idf/$(component)/lib$(component).a)
