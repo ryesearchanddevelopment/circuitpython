@@ -27,15 +27,15 @@
 static mp_obj_t openthread_pending_dataset_get_channel(mp_obj_t self_in)
 {
     openthread_pending_dataset_obj_t *self = MP_OBJ_TO_PTR(self_in);
-    return mp_obj_new_int(self->aDataset->mChannel);
+    return mp_obj_new_int(self->dataset->mChannel);
 }
 MP_DEFINE_CONST_FUN_OBJ_1(openthread_pending_dataset_get_channel_obj, openthread_pending_dataset_get_channel);
 
 static mp_obj_t openthread_pending_dataset_set_channel(mp_obj_t self_in, mp_obj_t channel_in)
 {
     openthread_pending_dataset_obj_t *self = MP_OBJ_TO_PTR(self_in);
-    self->aDataset->mChannel = mp_obj_get_int(channel_in);
-    self->aDataset->mComponents.mIsChannelPresent = true;
+    self->dataset->mChannel = mp_obj_get_int(channel_in);
+    self->dataset->mComponents.mIsChannelPresent = true;
 
     return mp_const_none;
 }
@@ -51,15 +51,15 @@ MP_PROPERTY_GETSET(openthread_pending_dataset_channel_obj,
 static mp_obj_t openthread_pending_dataset_get_pan_id(mp_obj_t self_in)
 {
     openthread_pending_dataset_obj_t *self = MP_OBJ_TO_PTR(self_in);
-    return mp_obj_new_int(self->aDataset->mPanId);
+    return mp_obj_new_int(self->dataset->mPanId);
 }
 MP_DEFINE_CONST_FUN_OBJ_1(openthread_pending_dataset_get_pan_id_obj, openthread_pending_dataset_get_pan_id);
 
 static mp_obj_t openthread_pending_dataset_set_pan_id(mp_obj_t self_in, mp_obj_t pan_id_in)
 {
     openthread_pending_dataset_obj_t *self = MP_OBJ_TO_PTR(self_in);
-    self->aDataset->mPanId = (otPanId)mp_obj_get_int(pan_id_in);
-    self->aDataset->mComponents.mIsPanIdPresent = true;
+    self->dataset->mPanId = (otPanId)mp_obj_get_int(pan_id_in);
+    self->dataset->mComponents.mIsPanIdPresent = true;
 
     return mp_const_none;
 }
@@ -75,7 +75,7 @@ MP_PROPERTY_GETSET(openthread_pending_dataset_pan_id_obj,
 static mp_obj_t openthread_pending_dataset_get_pan_id_extended(mp_obj_t self_in)
 {
     openthread_pending_dataset_obj_t *self = MP_OBJ_TO_PTR(self_in);
-    return MP_OBJ_FROM_PTR(self->aDataset->mExtendedPanId.m8);
+    return MP_OBJ_FROM_PTR(self->dataset->mExtendedPanId.m8);
 }
 MP_DEFINE_CONST_FUN_OBJ_1(openthread_pending_dataset_get_pan_id_extended_obj, openthread_pending_dataset_get_pan_id_extended);
 
@@ -90,8 +90,8 @@ static mp_obj_t openthread_pending_dataset_set_pan_id_extended(mp_obj_t self_in,
     }
 
     openthread_pending_dataset_obj_t *self = MP_OBJ_TO_PTR(self_in);
-    memcpy(self->aDataset->mExtendedPanId.m8, mac_address.buf, sizeof(self->aDataset->mExtendedPanId));
-    self->aDataset->mComponents.mIsExtendedPanIdPresent = true;
+    memcpy(self->dataset->mExtendedPanId.m8, mac_address.buf, sizeof(self->dataset->mExtendedPanId));
+    self->dataset->mComponents.mIsExtendedPanIdPresent = true;
 
     return mp_const_none;
 }
@@ -109,7 +109,7 @@ MP_PROPERTY_GETSET(openthread_pending_dataset_pan_id_extended_obj,
 static mp_obj_t openthread_pending_dataset_set_active(size_t n_args, const mp_obj_t *pos_args, mp_map_t *kw_args)
 {
     openthread_pending_dataset_obj_t *self = MP_OBJ_TO_PTR(pos_args[0]);
-    otDatasetSetActive(self->instance, self->aDataset);
+    otDatasetSetActive(self->instance, self->dataset);
 
     return mp_const_none;
 }

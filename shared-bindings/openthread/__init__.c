@@ -17,8 +17,9 @@ openthread_pending_dataset_obj_t openthread_pending_dataset_obj;
 static mp_obj_t openthread___init__(void)
 {
     openthread_pending_dataset_obj_t *self = &openthread_pending_dataset_obj;
+    openthread_pending_dataset_obj.base.type = &openthread_pending_dataset_type;
     self->instance = otInstanceInitSingle();
-    memset(self->aDataset, 0, sizeof(otOperationalDataset));
+    memset(self->dataset, 0, sizeof(otOperationalDataset));
     return mp_const_none;
 }
 static MP_DEFINE_CONST_FUN_OBJ_0(openthread___init___obj, openthread___init__);
