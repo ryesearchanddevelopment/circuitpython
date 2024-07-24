@@ -484,6 +484,9 @@ ifneq ($(CIRCUITPY_WIFI),0)
 	BINARY_BLOBS += $(addprefix esp-idf/components/esp_wifi/lib/$(IDF_TARGET)/, libmesh.a libwapi.a)
 	endif
 endif
+ifneq ($(CIRCUITPY_OPENTHREAD),0)
+	BINARY_BLOBS += esp-idf/components/esp_coex/lib/$(IDF_TARGET)/libcoexist.a
+endif
 
 ifeq ($(IDF_TARGET),esp32)
 BINARY_BLOBS += esp-idf/components/esp_phy/lib/$(IDF_TARGET)/librtc.a
@@ -536,7 +539,7 @@ ifneq ($(CIRCUITPY_USB_DEVICE),0)
 	ESP_IDF_COMPONENTS_LINK += usb
 endif
 ifneq ($(CIRCUITPY_OPENTHREAD),0)
-	ESP_IDF_COMPONENTS_LINK += openthread
+	ESP_IDF_COMPONENTS_LINK += openthread esp_coex ieee802154 lwip
 endif
 
 ESP_IDF_COMPONENTS_EXPANDED = $(foreach component, $(ESP_IDF_COMPONENTS_LINK), $(BUILD)/esp-idf/esp-idf/$(component)/lib$(component).a)

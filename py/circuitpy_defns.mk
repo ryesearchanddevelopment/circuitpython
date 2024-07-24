@@ -589,6 +589,7 @@ $(filter $(SRC_PATTERNS), \
 	wifi/AuthMode.c \
 	wifi/Packet.c \
 	openthread/__init__.c \
+	openthread/PendingDataset.c \
 )
 
 ifeq ($(CIRCUITPY_SAFEMODE_PY),1)
