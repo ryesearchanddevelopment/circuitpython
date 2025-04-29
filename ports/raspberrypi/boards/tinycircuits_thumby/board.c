@@ -16,43 +16,19 @@
 
 
 uint8_t display_init_sequence[] = {
-    /*
-    0, 0xae, // display off
-    0xd5, 0, 0x80, // set display clock div
-    0, 0xd3, 0, 0x00, // set display offset
-    0, 0x40, // set start line
-    0, 0xa4, // display all on, resume
-    0, 0xa6, // normal display
-    0, 0x8d, 0, 0x14, // charge pump
-    0, 0x20, 0, 0x00, // memory mode
-    0, 0xa0, // segremap
-    0, 0xc0, // com scan increment
-    0, 0x81, 0, 0xff, // set contrast
-    0, 0xd9, 0, 0xf1, // set precharge
-    0, 0xd8, 0, 0x20, // set v com detect
-    0, 0xa8, 0, 40-1, // set multiplex
-    0, 0xda, 0, 0x12, // set com pins
-    0, 0xad, 0, 0x30,
-    0, 0xaf, // on
-    */
-
-    0xae, 0, // sleep
-    0xd5, 1, 0x80, // fOsc divide by 2
-    0xd3, 1, 0x00, // set display offset
-    0x40, 1, 0x00, // set start line
-    0xa4, 0, // display all on, resume
-    0xa6, 0, // normal display
-    0x8d, 1, 0x14, // charge pump
-    0x20, 1, 0x00, // memory mode
-    0xa0, 0, // segremap
-    0xc0, 0, // com scan increment
-    0x81, 1, 0xff, // set contrast
-    0xd9, 1, 0xf1, // set precharge
-    0xd8, 1, 0x20, // set v com detect
-    0xa8, 1, 40-1, // set multiplex
-    0xda, 1, 0x12, // set com pins
-    0xad, 1, 0x30,
-    0xaf, 0, // on
+    0xAE, 0, // DISPLAY_OFF
+    0x20, 1, 0x00, // Set memory addressing to horizontal mode.
+    0x81, 1, 0xcf, // set contrast control
+    0xA1, 0, // Column 127 is segment 0
+    0xA6, 0, // Normal display
+    0xc8, 0, // Normal display
+    0xA8, 1, 0x3f, // Mux ratio is 1/64
+    0xd5, 1, 0x80, // Set divide ratio
+    0xd9, 1, 0xf1, // Set pre-charge period
+    0xda, 1, 0x12, // Set com configuration
+    0xdb, 1, 0x40, // Set vcom configuration
+    0x8d, 1, 0x14, // Enable charge pump
+    0xAF, 0, // DISPLAY_ON
 };
 
 void board_init(void) {
@@ -76,7 +52,7 @@ void board_init(void) {
         72, // Width (after rotation)
         40, // Height (after rotation)
         28, // column start
-        0, // row start
+        28, // row start
         0, // rotation
         1, // Color depth
         true, // grayscale
@@ -84,9 +60,9 @@ void board_init(void) {
         1, // bytes per cell. Only valid for depths < 8
         false, // reverse_pixels_in_byte. Only valid for depths < 8
         true, // reverse_pixels_in_word
-        0, // Set column command
-        0, // Set row command
-        0, // Write memory command
+        0x21, // Set column command
+        0x22, // Set row command
+        44, // Write memory command
         display_init_sequence,
         sizeof(display_init_sequence),
         NULL,  // backlight pin
@@ -97,8 +73,8 @@ void board_init(void) {
         true, // auto_refresh
         60, // native_frames_per_second
         true, // backlight_on_high
-        true, // SH1107_addressing
-        50000); // backlight pwm frequency
+        false, // SH1107_addressing
+        0); // backlight pwm frequency
 }
 
 void reset_board(void) {
