@@ -14,7 +14,7 @@ static const mp_rom_map_elem_t board_module_globals_table[] = {
     { MP_ROM_QSTR(MP_QSTR_EXT_TX), MP_ROM_PTR(&pin_GPIO0) },
     { MP_ROM_QSTR(MP_QSTR_EXT), MP_ROM_PTR(&pin_GPIO1) },
     { MP_ROM_QSTR(MP_QSTR_EXT_PU), MP_ROM_PTR(&pin_GPIO1) },
-    
+
     // 0.42 inch OLED AST1042
     { MP_ROM_QSTR(MP_QSTR_OLED_CS), MP_ROM_PTR(CIRCUITPY_BOARD_OLED_CS) },
     { MP_ROM_QSTR(MP_QSTR_OLED_DC), MP_ROM_PTR(CIRCUITPY_BOARD_OLED_DC) },
