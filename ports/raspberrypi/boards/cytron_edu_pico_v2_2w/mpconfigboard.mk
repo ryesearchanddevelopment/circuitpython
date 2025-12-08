@@ -11,6 +11,8 @@ EXTERNAL_FLASH_DEVICES = "W25Q16JVxQ"
 
 CIRCUITPY__EVE = 1
 
+CIRCUITPY_SDCARDIO = 1
+
 CIRCUITPY_CYW43 = 1
 CIRCUITPY_SSL = 1
 CIRCUITPY_HASHLIB = 1
@@ -48,5 +50,4 @@ FROZEN_MPY_DIRS += $(TOP)/frozen/Adafruit_CircuitPython_SSD1306
 FROZEN_MPY_DIRS += $(TOP)/frozen/Adafruit_CircuitPython_DisplayIO_SSD1306
 FROZEN_MPY_DIRS += $(TOP)/frozen/Adafruit_CircuitPython_ImageLoad
 FROZEN_MPY_DIRS += $(TOP)/frozen/Adafruit_CircuitPython_AHTx0
-FROZEN_MPY_DIRS += $(TOP)/frozen/Adafruit_CircuitPython_SD
 FROZEN_MPY_DIRS += $(TOP)/frozen/Adafruit_CircuitPython_HTTPServer
