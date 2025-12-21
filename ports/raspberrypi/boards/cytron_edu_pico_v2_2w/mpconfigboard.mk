@@ -9,9 +9,9 @@ CHIP_FAMILY = rp2
 
 EXTERNAL_FLASH_DEVICES = "W25Q16JVxQ"
 
-CIRCUITPY__EVE = 1
-
 CIRCUITPY_SDCARDIO = 1
+
+CIRCUITPY__EVE = 1
 
 CIRCUITPY_CYW43 = 1
 CIRCUITPY_SSL = 1
@@ -20,6 +20,11 @@ CIRCUITPY_WEB_WORKFLOW = 1
 CIRCUITPY_MDNS = 1
 CIRCUITPY_SOCKETPOOL = 1
 CIRCUITPY_WIFI = 1
+
+CIRCUITPY_MAX3421E = 0
+CIRCUITPY_ULAB = 0
+CIRCUITPY_ZLIB = 0
+CIRCUITPY_SSL_MBEDTLS = 0
 
 CFLAGS += \
     -DCYW43_PIN_WL_DYNAMIC=0 \
@@ -33,9 +38,6 @@ CFLAGS += \
 	-DCYW43_WL_GPIO_LED_PIN=0
 	-DCYW43_PIO_CLOCK_DIV_INT=3
 
-# Must be accompanied by a linker script change
-CFLAGS += -DCIRCUITPY_FIRMWARE_SIZE='(1536 * 1024)'
-
 # The default is -O3. Change to -O2 because the build was overflowing.
 OPTIMIZATION_FLAGS = -O2
 
@@ -46,9 +48,12 @@ FROZEN_MPY_DIRS += $(TOP)/frozen/Adafruit_CircuitPython_NeoPixel
 FROZEN_MPY_DIRS += $(TOP)/frozen/Adafruit_CircuitPython_Motor
 FROZEN_MPY_DIRS += $(TOP)/frozen/Adafruit_CircuitPython_SimpleIO
 FROZEN_MPY_DIRS += $(TOP)/frozen/Adafruit_CircuitPython_framebuf
+FROZEN_MPY_DIRS += $(TOP)/frozen/Adafruit_CircuitPython_OPT4048
 FROZEN_MPY_DIRS += $(TOP)/frozen/Adafruit_CircuitPython_SSD1306
 FROZEN_MPY_DIRS += $(TOP)/frozen/Adafruit_CircuitPython_DisplayIO_SSD1306
-FROZEN_MPY_DIRS += $(TOP)/frozen/Adafruit_CircuitPython_OPT4048
 FROZEN_MPY_DIRS += $(TOP)/frozen/Adafruit_CircuitPython_ImageLoad
 FROZEN_MPY_DIRS += $(TOP)/frozen/Adafruit_CircuitPython_AHTx0
 FROZEN_MPY_DIRS += $(TOP)/frozen/Adafruit_CircuitPython_HTTPServer
+FROZEN_MPY_DIRS += $(TOP)/frozen/CircuitPython_edupico2_paj7620
+
+CFLAGS += -DCIRCUITPY_FIRMWARE_SIZE='(1536 * 1024)'
