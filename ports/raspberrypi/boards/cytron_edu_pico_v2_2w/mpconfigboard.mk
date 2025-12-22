@@ -24,7 +24,6 @@ CIRCUITPY_WIFI = 1
 CIRCUITPY_MAX3421E = 0
 CIRCUITPY_ULAB = 0
 CIRCUITPY_ZLIB = 0
-CIRCUITPY_SSL_MBEDTLS = 0
 
 CFLAGS += \
     -DCYW43_PIN_WL_DYNAMIC=0 \
@@ -38,8 +37,8 @@ CFLAGS += \
 	-DCYW43_WL_GPIO_LED_PIN=0
 	-DCYW43_PIO_CLOCK_DIV_INT=3
 
-# The default is -O3. Change to -O2 because the build was overflowing.
-OPTIMIZATION_FLAGS = -O2
+# The default is -O3.
+OPTIMIZATION_FLAGS = -Os
 
 # Include these Python libraries in firmware.
 FROZEN_MPY_DIRS += $(TOP)/frozen/Adafruit_CircuitPython_Display_Text
