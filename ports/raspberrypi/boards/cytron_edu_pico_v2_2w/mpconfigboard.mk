@@ -9,6 +9,8 @@ CHIP_FAMILY = rp2
 
 EXTERNAL_FLASH_DEVICES = "W25Q16JVxQ"
 
+CIRCUITPY_SDCARDIO = 1
+
 CIRCUITPY__EVE = 1
 
 CIRCUITPY_CYW43 = 1
@@ -43,7 +45,6 @@ FROZEN_MPY_DIRS += $(TOP)/frozen/Adafruit_CircuitPython_SimpleIO
 FROZEN_MPY_DIRS += $(TOP)/frozen/Adafruit_CircuitPython_framebuf
 FROZEN_MPY_DIRS += $(TOP)/frozen/Adafruit_CircuitPython_OPT4048
 FROZEN_MPY_DIRS += $(TOP)/frozen/Adafruit_CircuitPython_SSD1306
-FROZEN_MPY_DIRS += $(TOP)/frozen/Adafruit_CircuitPython_DisplayIO_SSD1306
 FROZEN_MPY_DIRS += $(TOP)/frozen/Adafruit_CircuitPython_ImageLoad
 FROZEN_MPY_DIRS += $(TOP)/frozen/Adafruit_CircuitPython_AHTx0
 FROZEN_MPY_DIRS += $(TOP)/frozen/Adafruit_CircuitPython_SD
