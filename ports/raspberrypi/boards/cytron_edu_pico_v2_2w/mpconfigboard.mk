@@ -9,8 +9,6 @@ CHIP_FAMILY = rp2
 
 EXTERNAL_FLASH_DEVICES = "W25Q16JVxQ"
 
-CIRCUITPY_SDCARDIO = 1
-
 CIRCUITPY__EVE = 1
 
 CIRCUITPY_CYW43 = 1
@@ -20,10 +18,6 @@ CIRCUITPY_WEB_WORKFLOW = 1
 CIRCUITPY_MDNS = 1
 CIRCUITPY_SOCKETPOOL = 1
 CIRCUITPY_WIFI = 1
-
-CIRCUITPY_MAX3421E = 0
-CIRCUITPY_ULAB = 0
-CIRCUITPY_ZLIB = 0
 
 CFLAGS += \
     -DCYW43_PIN_WL_DYNAMIC=0 \
@@ -52,6 +46,7 @@ FROZEN_MPY_DIRS += $(TOP)/frozen/Adafruit_CircuitPython_SSD1306
 FROZEN_MPY_DIRS += $(TOP)/frozen/Adafruit_CircuitPython_DisplayIO_SSD1306
 FROZEN_MPY_DIRS += $(TOP)/frozen/Adafruit_CircuitPython_ImageLoad
 FROZEN_MPY_DIRS += $(TOP)/frozen/Adafruit_CircuitPython_AHTx0
+FROZEN_MPY_DIRS += $(TOP)/frozen/Adafruit_CircuitPython_SD
 FROZEN_MPY_DIRS += $(TOP)/frozen/Adafruit_CircuitPython_HTTPServer
 FROZEN_MPY_DIRS += $(TOP)/frozen/CircuitPython_edupico2_paj7620
 
