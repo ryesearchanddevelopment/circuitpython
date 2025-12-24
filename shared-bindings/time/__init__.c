@@ -22,7 +22,7 @@
 //|
 //|
 //| def monotonic() -> float:
-//|     """Returns an always increasing value of time with an unknown reference
+//|     """Returns an always increasing value of time (in fractional **seconds**) with an unknown reference
 //|     point. Only use it to compare against other values from `time.monotonic()`
 //|     during the same code run.
 //|
