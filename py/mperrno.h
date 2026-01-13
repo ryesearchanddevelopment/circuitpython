@@ -143,6 +143,8 @@
 
 #endif
 
+typedef int mp_errno_t;
+
 #if MICROPY_PY_ERRNO
 
 #include "py/obj.h"

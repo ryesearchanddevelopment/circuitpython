@@ -28,6 +28,9 @@ typedef enum {
     #endif
 } digitalinout_result_t;
 
+// Include protocol after types are defined
+#include "shared-bindings/digitalio/DigitalInOutProtocol.h"
+
 typedef enum {
     DIGITALINOUT_REG_READ,
     DIGITALINOUT_REG_WRITE,

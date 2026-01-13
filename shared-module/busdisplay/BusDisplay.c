@@ -80,7 +80,7 @@ void common_hal_busdisplay_busdisplay_construct(busdisplay_busdisplay_obj_t *sel
             memcpy(full_command + 1, data, data_size);
             self->bus.send(self->bus.bus, DISPLAY_COMMAND, CHIP_SELECT_TOGGLE_EVERY_BYTE, full_command, data_size + 1);
         } else {
-            self->bus.send(self->bus.bus, DISPLAY_COMMAND, CHIP_SELECT_TOGGLE_EVERY_BYTE, cmd, 1);
+            self->bus.send(self->bus.bus, DISPLAY_COMMAND, data_size > 0 ? CHIP_SELECT_TOGGLE_EVERY_BYTE : CHIP_SELECT_UNTOUCHED, cmd, 1);
             self->bus.send(self->bus.bus, DISPLAY_DATA, CHIP_SELECT_UNTOUCHED, data, data_size);
         }
         displayio_display_bus_end_transaction(&self->bus);
