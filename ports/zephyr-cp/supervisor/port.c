@@ -9,6 +9,10 @@
 #include "mpconfigboard.h"
 #include "supervisor/shared/tick.h"
 
+#if CIRCUITPY_BLEIO
+#include "shared-bindings/_bleio/__init__.h"
+#endif
+
 #include <zephyr/autoconf.h>
 #include <zephyr/kernel.h>
 #include <zephyr/sys/reboot.h>
@@ -24,6 +28,10 @@ extern const uint32_t *const ram_bounds[];
 extern const size_t circuitpy_max_ram_size;
 
 static pool_t pools[CIRCUITPY_RAM_DEVICE_COUNT];
+static uint8_t valid_pool_count = 0;
+static bool zephyr_malloc_active = false;
+static void *zephyr_malloc_top = NULL;
+static void *zephyr_malloc_bottom = NULL;
 
 static K_EVENT_DEFINE(main_needed);
 
@@ -50,7 +58,9 @@ void reset_cpu(void) {
 }
 
 void reset_port(void) {
-
+    #if CIRCUITPY_BLEIO
+    bleio_reset();
+    #endif
 }
 
 void reset_to_bootloader(void) {
@@ -135,19 +145,40 @@ void port_idle_until_interrupt(void) {
 
 // Zephyr doesn't maintain one multi-heap. So, make our own using TLSF.
 void port_heap_init(void) {
+    #ifdef CONFIG_COMMON_LIBC_MALLOC
+    // Do a test malloc to determine if Zephyr has an outer heap.
+    uint32_t *test_malloc = malloc(32);
+    free(test_malloc); // Free right away so we don't forget. We don't actually write it anyway.
+    zephyr_malloc_active = test_malloc != NULL;
+    #endif
+
     for (size_t i = 0; i < CIRCUITPY_RAM_DEVICE_COUNT; i++) {
         uint32_t *heap_bottom = ram_bounds[2 * i];
         uint32_t *heap_top = ram_bounds[2 * i + 1];
         size_t size = (heap_top - heap_bottom) * sizeof(uint32_t);
+        if (size < 1024) {
+            printk("Skipping region because the linker filled it up.\n");
+            continue;
+        }
+        #ifdef CONFIG_COMMON_LIBC_MALLOC
+        if (heap_bottom <= test_malloc && test_malloc < heap_top) {
+            zephyr_malloc_top = heap_top;
+            zephyr_malloc_bottom = heap_bottom;
+            printk("Skipping region because Zephyr malloc is within bounds\n");
+            pools[i] = NULL;
+            continue;
+        }
+        #endif
 
         printk("Init heap at %p - %p with size %d\n", heap_bottom, heap_top, size);
         // If this crashes, then make sure you've enabled all of the Kconfig needed for the drivers.
-        if (i == 0) {
+        if (valid_pool_count == 0) {
             heap = tlsf_create_with_pool(heap_bottom, size, circuitpy_max_ram_size);
             pools[i] = tlsf_get_pool(heap);
         } else {
             pools[i] = tlsf_add_pool(heap, heap_bottom + 1, size - sizeof(uint32_t));
         }
+        valid_pool_count++;
     }
     #if !DT_HAS_CHOSEN(zephyr_sram)
     #error "No SRAM!"
@@ -155,16 +186,36 @@ void port_heap_init(void) {
 }
 
 void *port_malloc(size_t size, bool dma_capable) {
-    void *block = tlsf_malloc(heap, size);
+    void *block = NULL;
+    if (valid_pool_count > 0) {
+        block = tlsf_malloc(heap, size);
+    }
+    #ifdef CONFIG_COMMON_LIBC_MALLOC
+    if (block == NULL) {
+        block = malloc(size);
+    }
+    #endif
     return block;
 }
 
 void port_free(void *ptr) {
-    tlsf_free(heap, ptr);
+    if (valid_pool_count > 0 && !(ptr >= zephyr_malloc_bottom && ptr < zephyr_malloc_top)) {
+        tlsf_free(heap, ptr);
+        return;
+    }
+    #ifdef CONFIG_COMMON_LIBC_MALLOC
+    free(ptr);
+    #endif
 }
 
 void *port_realloc(void *ptr, size_t size, bool dma_capable) {
-    return tlsf_realloc(heap, ptr, size);
+    if (valid_pool_count > 0 && !(ptr >= zephyr_malloc_bottom && ptr < zephyr_malloc_top)) {
+        return tlsf_realloc(heap, ptr, size);
+    }
+    #ifdef CONFIG_COMMON_LIBC_MALLOC
+    return realloc(ptr, size);
+    #endif
+    return NULL;
 }
 
 static bool max_size_walker(void *ptr, size_t size, int used, void *user) {
@@ -177,15 +228,21 @@ static bool max_size_walker(void *ptr, size_t size, int used, void *user) {
 
 size_t port_heap_get_largest_free_size(void) {
     size_t max_size = 0;
-    for (size_t i = 0; i < CIRCUITPY_RAM_DEVICE_COUNT; i++) {
-        tlsf_walk_pool(pools[i], max_size_walker, &max_size);
+    if (valid_pool_count > 0) {
+        for (size_t i = 0; i < CIRCUITPY_RAM_DEVICE_COUNT; i++) {
+            if (pools[i] == NULL) {
+                continue;
+            }
+            tlsf_walk_pool(pools[i], max_size_walker, &max_size);
+        }
+        // IDF does this. Not sure why.
+        return tlsf_fit_size(heap, max_size);
     }
-    // IDF does this. Not sure why.
-    return tlsf_fit_size(heap, max_size);
+    return 64 * 1024;
 }
 
 void assert_post_action(const char *file, unsigned int line) {
-    printk("Assertion failed at %s:%u\n", file, line);
+    // printk("Assertion failed at %s:%u\n", file, line);
     // Check that this is arm
     #if defined(__arm__)
     __asm__ ("bkpt");

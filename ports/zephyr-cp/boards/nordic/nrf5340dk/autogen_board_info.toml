@@ -2,8 +2,8 @@
 name = "Nordic Semiconductor nRF5340 DK"
 
 [modules]
-__future__ = false
-_bleio = false
+__future__ = true
+_bleio = true # Zephyr board has _bleio
 _eve = false
 _pew = false
 _pixelmap = false

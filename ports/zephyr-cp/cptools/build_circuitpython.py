@@ -43,6 +43,7 @@ compiler = cpbuild.Compiler(srcdir, builddir, cmake_args)
 
 ALWAYS_ON_MODULES = ["sys", "collections"]
 DEFAULT_MODULES = [
+    "__future__",
     "time",
     "os",
     "microcontroller",
@@ -82,7 +83,13 @@ REVERSE_DEPENDENCIES = {
 # Other flags to set when a module is enabled
 EXTRA_FLAGS = {"busio": ["BUSIO_SPI", "BUSIO_I2C"]}
 
-SHARED_MODULE_AND_COMMON_HAL = ["os"]
+SHARED_MODULE_AND_COMMON_HAL = ["_bleio", "os"]
+
+# Mapping from module directory name to the flag name used in CIRCUITPY_<FLAG>
+MODULE_FLAG_NAMES = {
+    "__future__": "FUTURE",
+    "_bleio": "BLEIO",
+}
 
 
 async def preprocess_and_split_defs(compiler, source_file, build_path, flags):
@@ -338,6 +345,11 @@ async def build_circuitpython():
 
     autogen_board_info_fn = mpconfigboard_fn.parent / "autogen_board_info.toml"
 
+    creator_id = mpconfigboard.get("CIRCUITPY_CREATOR_ID", mpconfigboard.get("USB_VID", 0x1209))
+    creation_id = mpconfigboard.get("CIRCUITPY_CREATION_ID", mpconfigboard.get("USB_PID", 0x000C))
+    circuitpython_flags.append(f"-DCIRCUITPY_CREATOR_ID=0x{creator_id:08x}")
+    circuitpython_flags.append(f"-DCIRCUITPY_CREATION_ID=0x{creation_id:08x}")
+
     enabled_modules, module_reasons = determine_enabled_modules(board_info, portdir, srcdir)
 
     circuitpython_flags.extend(board_info["cflags"])
@@ -373,6 +385,7 @@ async def build_circuitpython():
     supervisor_source = [pathlib.Path(p) for p in supervisor_source]
     supervisor_source.extend(board_info["source_files"])
     supervisor_source.extend(top.glob("supervisor/shared/*.c"))
+    supervisor_source.append(top / "supervisor/shared/bluetooth/bluetooth.c")
     supervisor_source.append(top / "supervisor/shared/translate/translate.c")
     # if web_workflow:
     #     supervisor_source.extend(top.glob("supervisor/shared/web_workflow/*.c"))
@@ -445,7 +458,8 @@ async def build_circuitpython():
         if module.name in module_reasons:
             v.comment(module_reasons[module.name])
         autogen_modules.add(module.name, v)
-        circuitpython_flags.append(f"-DCIRCUITPY_{module.name.upper()}={1 if enabled else 0}")
+        flag_name = MODULE_FLAG_NAMES.get(module.name, module.name.upper())
+        circuitpython_flags.append(f"-DCIRCUITPY_{flag_name}={1 if enabled else 0}")
 
         if enabled:
             if module.name in EXTRA_FLAGS:

@@ -2,7 +2,7 @@
 name = "STMicroelectronics Nucleo N657X0-Q"
 
 [modules]
-__future__ = false
+__future__ = true
 _bleio = false
 _eve = false
 _pew = false

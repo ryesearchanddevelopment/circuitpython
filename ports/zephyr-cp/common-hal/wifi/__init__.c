@@ -29,6 +29,8 @@ wifi_radio_obj_t common_hal_wifi_radio_obj;
 #include <zephyr/kernel.h>
 #include <zephyr/net/wifi_mgmt.h>
 
+#include <inttypes.h>
+
 #define MAC_ADDRESS_LENGTH 6
 
 static void schedule_background_on_cp_core(void *arg) {
@@ -44,18 +46,23 @@ static void schedule_background_on_cp_core(void *arg) {
 static struct net_mgmt_event_callback wifi_cb;
 static struct net_mgmt_event_callback ipv4_cb;
 
-static void _event_handler(struct net_mgmt_event_callback *cb, uint32_t mgmt_event, struct net_if *iface) {
+static void _event_handler(struct net_mgmt_event_callback *cb, uint64_t mgmt_event, struct net_if *iface) {
     wifi_radio_obj_t *self = &common_hal_wifi_radio_obj;
-    printk("_event_handler cb %p event %08x if %p\n", cb, mgmt_event, iface);
+    printk("_event_handler cb %p event 0x%" PRIx64 " if %p\n", cb, mgmt_event, iface);
 
     switch (mgmt_event) {
-        case NET_EVENT_WIFI_SCAN_RESULT:
+        case NET_EVENT_WIFI_SCAN_RESULT: {
             printk("NET_EVENT_WIFI_SCAN_RESULT\n");
-            struct wifi_scan_result *result = (struct wifi_scan_result *)cb->info;
-            if (self->current_scan != NULL) {
+            #if defined(CONFIG_NET_MGMT_EVENT_INFO)
+            const struct wifi_scan_result *result = cb->info;
+            if (result != NULL && self->current_scan != NULL) {
                 wifi_scannednetworks_scan_result(self->current_scan, result);
             }
+            #else
+            printk("Scan result info unavailable (CONFIG_NET_MGMT_EVENT_INFO disabled)\n");
+            #endif
             break;
+        }
         case NET_EVENT_WIFI_SCAN_DONE:
             printk("NET_EVENT_WIFI_SCAN_DONE\n");
             if (self->current_scan != NULL) {
@@ -281,6 +288,7 @@ void common_hal_wifi_init(bool user_initiated) {
     net_mgmt_add_event_callback(&wifi_cb);
     net_mgmt_add_event_callback(&ipv4_cb);
 
+    #if defined(CONFIG_NET_HOSTNAME)
     // Set the default hostname capped at NET_HOSTNAME_MAX_LEN characters. We trim off
     // the start of the board name (likely manufacturer) because the end is
     // often more unique to the board.
@@ -301,6 +309,9 @@ void common_hal_wifi_init(bool user_initiated) {
     if (net_hostname_set(cpy_default_hostname, strlen(cpy_default_hostname)) != 0) {
         printk("setting hostname failed\n");
     }
+    #else
+    printk("Hostname support disabled in Zephyr config\n");
+    #endif
     // set station mode to avoid the default SoftAP
     common_hal_wifi_radio_start_station(self);
     // start wifi

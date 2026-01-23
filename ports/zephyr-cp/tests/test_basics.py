@@ -3,18 +3,23 @@
 
 """Test LED blink functionality on native_sim."""
 
-from conftest import InputTrigger, parse_gpio_trace
+import pytest
+
+from pathlib import Path
+from perfetto.trace_processor import TraceProcessor
 
 
-def test_blank_flash_hello_world(run_circuitpython):
+@pytest.mark.circuitpy_drive(None)
+def test_blank_flash_hello_world(circuitpython):
     """Test that an erased flash shows code.py output header."""
-    result = run_circuitpython(None, timeout=4, erase_flash=True)
+    circuitpython.wait_until_done()
 
-    assert "Board ID:native_native_sim" in result.output
-    assert "UID:" in result.output
-    assert "code.py output:" in result.output
-    assert "Hello World" in result.output
-    assert "done" in result.output
+    output = circuitpython.serial.all_output
+    assert "Board ID:native_native_sim" in output
+    assert "UID:" in output
+    assert "code.py output:" in output
+    assert "Hello World" in output
+    assert "done" in output
 
 
 BLINK_CODE = """\
@@ -37,19 +42,36 @@ print("done")
 """
 
 
-def test_blink_output(run_circuitpython):
+def parse_gpio_trace(trace_file: Path, pin_name: str = "gpio_emul.00") -> list[tuple[int, int]]:
+    """Parse GPIO trace from Perfetto trace file."""
+    tp = TraceProcessor(file_path=str(trace_file))
+    result = tp.query(
+        f'''
+        SELECT c.ts, c.value
+        FROM counter c
+        JOIN track t ON c.track_id = t.id
+        WHERE t.name = "{pin_name}"
+        ORDER BY c.ts
+        '''
+    )
+    return [(row.ts, int(row.value)) for row in result]
+
+
+@pytest.mark.circuitpy_drive({"code.py": BLINK_CODE})
+def test_blink_output(circuitpython):
     """Test blink program produces expected output and GPIO traces."""
-    result = run_circuitpython(BLINK_CODE, timeout=5)
+    circuitpython.wait_until_done()
 
     # Check serial output
-    assert "LED on 0" in result.output
-    assert "LED off 0" in result.output
-    assert "LED on 2" in result.output
-    assert "LED off 2" in result.output
-    assert "done" in result.output
+    output = circuitpython.serial.all_output
+    assert "LED on 0" in output
+    assert "LED off 0" in output
+    assert "LED on 2" in output
+    assert "LED off 2" in output
+    assert "done" in output
 
     # Check GPIO traces - LED is on gpio_emul.00
-    gpio_trace = parse_gpio_trace(result.trace_file, "gpio_emul.00")
+    gpio_trace = parse_gpio_trace(circuitpython.trace_file, "gpio_emul.00")
 
     # Deduplicate by timestamp (keep last value at each timestamp)
     by_timestamp = {}
@@ -115,17 +137,17 @@ print("done")
 """
 
 
-def test_basic_serial_input(run_circuitpython):
+@pytest.mark.circuitpy_drive({"code.py": INPUT_CODE})
+def test_basic_serial_input(circuitpython):
     """Test reading single character from serial via PTY write."""
-    result = run_circuitpython(
-        INPUT_CODE,
-        timeout=5.0,
-        input_sequence=[InputTrigger(trigger="ready", data=b"A")],
-    )
+    circuitpython.serial.wait_for("ready")
+    circuitpython.serial.write("A")
+    circuitpython.wait_until_done()
 
-    assert "ready" in result.output
-    assert "received: 'A'" in result.output
-    assert "done" in result.output
+    output = circuitpython.serial.all_output
+    assert "ready" in output
+    assert "received: 'A'" in output
+    assert "done" in output
 
 
 INPUT_FUNC_CODE = """\
@@ -136,18 +158,18 @@ print("done")
 """
 
 
-def test_input_function(run_circuitpython):
+@pytest.mark.circuitpy_drive({"code.py": INPUT_FUNC_CODE})
+def test_input_function(circuitpython):
     """Test the built-in input() function with PTY input."""
-    result = run_circuitpython(
-        INPUT_FUNC_CODE,
-        timeout=5.0,
-        input_sequence=[InputTrigger(trigger="Enter name:", data=b"World\r")],
-    )
+    circuitpython.serial.wait_for("Enter name:")
+    circuitpython.serial.write("World\r")
+    circuitpython.wait_until_done()
 
-    assert "ready" in result.output
-    assert "Enter name:" in result.output
-    assert "hello World" in result.output
-    assert "done" in result.output
+    output = circuitpython.serial.all_output
+    assert "ready" in output
+    assert "Enter name:" in output
+    assert "hello World" in output
+    assert "done" in output
 
 
 INTERRUPT_CODE = """\
@@ -161,18 +183,18 @@ print("completed")
 """
 
 
-def test_ctrl_c_interrupt(run_circuitpython):
+@pytest.mark.circuitpy_drive({"code.py": INTERRUPT_CODE})
+def test_ctrl_c_interrupt(circuitpython):
     """Test sending Ctrl+C (0x03) to interrupt running code."""
-    result = run_circuitpython(
-        INTERRUPT_CODE,
-        timeout=15.0,
-        input_sequence=[InputTrigger(trigger="loop 5", data=b"\x03")],
-    )
+    circuitpython.serial.wait_for("loop 5")
+    circuitpython.serial.write("\x03")
+    circuitpython.wait_until_done()
 
-    assert "starting" in result.output
-    assert "loop 5" in result.output
-    assert "KeyboardInterrupt" in result.output
-    assert "completed" not in result.output
+    output = circuitpython.serial.all_output
+    assert "starting" in output
+    assert "loop 5" in output
+    assert "KeyboardInterrupt" in output
+    assert "completed" not in output
 
 
 RELOAD_CODE = """\
@@ -183,17 +205,17 @@ print("done")
 """
 
 
-def test_ctrl_d_soft_reload(run_circuitpython):
+@pytest.mark.circuitpy_drive({"code.py": RELOAD_CODE})
+def test_ctrl_d_soft_reload(circuitpython):
     """Test sending Ctrl+D (0x04) to trigger soft reload."""
-    result = run_circuitpython(
-        RELOAD_CODE,
-        timeout=10.0,
-        input_sequence=[InputTrigger(trigger="first run", data=b"\x04")],
-    )
+    circuitpython.serial.wait_for("first run")
+    circuitpython.serial.write("\x04")
+    circuitpython.wait_until_done()
 
     # Should see "first run" appear multiple times due to reload
     # or see a soft reboot message
-    assert "first run" in result.output
+    output = circuitpython.serial.all_output
+    assert "first run" in output
     # The soft reload should restart the code before "done" is printed
-    assert "done" in result.output
-    assert result.output.count("first run") > 1
+    assert "done" in output
+    assert output.count("first run") > 1

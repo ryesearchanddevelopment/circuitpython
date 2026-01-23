@@ -2,7 +2,7 @@
 name = "POSIX/Native Boards Native simulator - native_sim"
 
 [modules]
-__future__ = false
+__future__ = true
 _bleio = false
 _eve = false
 _pew = false

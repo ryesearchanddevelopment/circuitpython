@@ -143,6 +143,16 @@ CONNECTORS = {
         "LCD_D14",
         "LCD_D15",
     ],
+    "nxp,lcd-pmod": [
+        "LCD_WR",
+        "TOUCH_SCL",
+        "LCD_DC",
+        "TOUCH_SDA",
+        "LCD_MOSI",
+        "TOUCH_RESET",
+        "LCD_CS",
+        "TOUCH_INT",
+    ],
     "raspberrypi,csi-connector": [
         "CSI_D0_N",
         "CSI_D0_P",
@@ -354,6 +364,12 @@ def find_ram_regions(device_tree):
         if "zephyr,memory-region" not in compatible or "zephyr,memory-region" not in node.props:
             continue
 
+        is_mmio_sram = "mmio-sram" in compatible
+        device_type = node.props.get("device_type")
+        has_memory_device_type = device_type and device_type.to_string() == "memory"
+        if not (is_mmio_sram or has_memory_device_type):
+            continue
+
         size = node.props["reg"].to_nums()[1]
 
         start = "__" + node.props["zephyr,memory-region"].to_string() + "_end"
@@ -378,7 +394,25 @@ def zephyr_dts_to_cp_board(board_id, portdir, builddir, zephyrbuilddir):  # noqa
     board_info = {
         "wifi": False,
         "usb_device": False,
+        "_bleio": False,
     }
+
+    config_bt_enabled = False
+    config_bt_found = False
+    config_present = True
+    config = zephyrbuilddir / ".config"
+    if not config.exists():
+        config_present = False
+    else:
+        for line in config.read_text().splitlines():
+            if line.startswith("CONFIG_BT="):
+                config_bt_enabled = line.strip().endswith("=y")
+                config_bt_found = True
+                break
+            if line.startswith("# CONFIG_BT is not set"):
+                config_bt_enabled = False
+                config_bt_found = True
+                break
 
     runners = zephyrbuilddir / "runners.yaml"
     runners = yaml.safe_load(runners.read_text())
@@ -433,6 +467,7 @@ def zephyr_dts_to_cp_board(board_id, portdir, builddir, zephyrbuilddir):  # noqa
     # Store active Zephyr device labels per-driver so that we can make them available via board.
     active_zephyr_devices = {}
     usb_num_endpoint_pairs = 0
+    ble_hardware_present = False
     for k in device_tree.root.nodes["chosen"].props:
         value = device_tree.root.nodes["chosen"].props[k]
         path2chosen[value.to_path()] = k
@@ -484,6 +519,8 @@ def zephyr_dts_to_cp_board(board_id, portdir, builddir, zephyrbuilddir):  # noqa
                 usb_num_endpoint_pairs += min(single_direction_endpoints)
             elif driver.startswith("wifi"):
                 board_info["wifi"] = True
+            elif driver == "bluetooth/hci":
+                ble_hardware_present = True
             elif driver in EXCEPTIONAL_DRIVERS:
                 pass
             elif driver in BUSIO_CLASSES:
@@ -580,7 +617,13 @@ def zephyr_dts_to_cp_board(board_id, portdir, builddir, zephyrbuilddir):  # noqa
             board_pin_names = board_names.get((ioport, num), [])
 
             for board_pin_name in board_pin_names:
-                board_pin_name = board_pin_name.upper().replace(" ", "_").replace("-", "_")
+                board_pin_name = (
+                    board_pin_name.upper()
+                    .replace(" ", "_")
+                    .replace("-", "_")
+                    .replace("(", "")
+                    .replace(")", "")
+                )
                 board_pin_mapping.append(
                     f"{{ MP_ROM_QSTR(MP_QSTR_{board_pin_name}), MP_ROM_PTR(&pin_{pin_object_name}) }},"
                 )
@@ -669,7 +712,8 @@ static MP_DEFINE_CONST_FUN_OBJ_0({function_object}, {c_function_name});""".lstri
         device, start, end, size, path = ram
         max_size = max(max_size, size)
         # We always start at the end of a Zephyr linker section so we need the externs and &.
-        if board_id in ["native_sim"]:
+        # Native/simulated boards don't have real memory-mapped RAM, so we allocate static arrays.
+        if board_id in ["native_sim"] or "bsim" in board_id:
             ram_externs.append("// This is a native board so we provide all of RAM for our heaps.")
             ram_externs.append(f"static uint32_t _{device}[{size // 4}]; // {path}")
             start = f"(const uint32_t *) (_{device})"
@@ -741,6 +785,17 @@ CIRCUITPYTHON_BOARD_DICT_STANDARD_ITEMS
 MP_DEFINE_CONST_DICT(board_module_globals, board_module_globals_table);
 """
     board_c.write_text(new_board_c_content)
+    if ble_hardware_present:
+        if not config_present:
+            raise RuntimeError(
+                "Missing Zephyr .config; CONFIG_BT must be set explicitly when BLE hardware is present."
+            )
+        if not config_bt_found:
+            raise RuntimeError(
+                "CONFIG_BT is missing from Zephyr .config; set it explicitly when BLE hardware is present."
+            )
+
+    board_info["_bleio"] = ble_hardware_present and config_bt_enabled
     board_info["source_files"] = [board_c]
     board_info["cflags"] = ("-I", board_dir)
     board_info["flash_count"] = len(flashes)

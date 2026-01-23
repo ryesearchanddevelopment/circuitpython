@@ -107,3 +107,6 @@ TAGS
 
 # windsurf rules
 .windsurfrules
+
+# git-review-web outputs
+.review
