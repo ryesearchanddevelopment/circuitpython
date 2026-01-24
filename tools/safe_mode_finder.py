@@ -86,8 +86,8 @@ with ConnectHelper.session_with_chosen_probe(target_override="nrf52840") as sess
     print(e.has_dwarf_info())
     d = e.get_dwarf_info()
     # print(dir(d))
-    aranges = d.get_aranges()
-    cu_offset = aranges.cu_offset_at_addr(pc)
+    arranges = d.get_aranges()
+    cu_offset = arranges.cu_offset_at_addr(pc)
     if not cu_offset:
         cu_offset = 0
     main_cu = d.get_CU_at(cu_offset)

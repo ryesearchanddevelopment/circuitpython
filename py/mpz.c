@@ -782,15 +782,15 @@ void mpz_set_from_float(mpz_t *z, mp_float_t src) {
             // 2 <= value
             const int dig_cnt = (adj_exp + 1 + (DIG_SIZE - 1)) / DIG_SIZE;
             const unsigned int rem = adj_exp % DIG_SIZE;
-            int dig_ind, shft;
+            int dig_ind, shift;
             mp_float_uint_t frc = u.p.frc | ((mp_float_uint_t)1 << MP_FLOAT_FRAC_BITS);
 
             if (adj_exp < MP_FLOAT_FRAC_BITS) {
-                shft = 0;
+                shift = 0;
                 dig_ind = 0;
                 frc >>= MP_FLOAT_FRAC_BITS - adj_exp;
             } else {
-                shft = (rem - MP_FLOAT_FRAC_BITS) % DIG_SIZE;
+                shift = (rem - MP_FLOAT_FRAC_BITS) % DIG_SIZE;
                 dig_ind = (adj_exp - MP_FLOAT_FRAC_BITS) / DIG_SIZE;
             }
             mpz_need_dig(z, dig_cnt);
@@ -798,9 +798,9 @@ void mpz_set_from_float(mpz_t *z, mp_float_t src) {
             if (dig_ind != 0) {
                 memset(z->dig, 0, dig_ind * sizeof(mpz_dig_t));
             }
-            if (shft != 0) {
-                z->dig[dig_ind++] = (frc << shft) & DIG_MASK;
-                frc >>= DIG_SIZE - shft;
+            if (shift != 0) {
+                z->dig[dig_ind++] = (frc << shift) & DIG_MASK;
+                frc >>= DIG_SIZE - shift;
             }
             #if DIG_SIZE < (MP_FLOAT_FRAC_BITS + 1)
             while (dig_ind != dig_cnt) {
