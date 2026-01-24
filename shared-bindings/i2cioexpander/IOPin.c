@@ -42,16 +42,12 @@ static inline void check_for_deinit(i2cioexpander_iopin_obj_t *self) {
         raise_deinited_error();
     }
 }
-
-//|     def deinit(self) -> None:
-//|         """Turn off the pin and release it for other use."""
-//|         ...
-static mp_obj_t i2cioexpander_iopin_deinit(mp_obj_t self_in) {
-    i2cioexpander_iopin_obj_t *self = MP_OBJ_TO_PTR(self_in);
-    common_hal_i2cioexpander_iopin_deinit(self);
-    return mp_const_none;
-}
-MP_DEFINE_CONST_FUN_OBJ_1(i2cioexpander_iopin_deinit_obj, i2cioexpander_iopin_deinit);
+//| class IOPin:
+//|     """Control a single pin on an `IOExpander` in the same way as `DigitalInOut`.
+//|
+//|        Not constructed directly. Get from `IOExpander.pins` instead.
+//|     """
+//|
 
 //|     def switch_to_output(
 //|         self, value: bool = False, drive_mode: digitalio.DriveMode = digitalio.DriveMode.PUSH_PULL
@@ -310,7 +306,6 @@ static const digitalinout_p_t iopin_digitalinout_p = {
 
 static const mp_rom_map_elem_t i2cioexpander_iopin_locals_dict_table[] = {
     // Methods
-    { MP_ROM_QSTR(MP_QSTR_deinit), MP_ROM_PTR(&i2cioexpander_iopin_deinit_obj) },
     { MP_ROM_QSTR(MP_QSTR_switch_to_input), MP_ROM_PTR(&i2cioexpander_iopin_switch_to_input_obj) },
     { MP_ROM_QSTR(MP_QSTR_switch_to_output), MP_ROM_PTR(&i2cioexpander_iopin_switch_to_output_obj) },
 

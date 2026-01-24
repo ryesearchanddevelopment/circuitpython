@@ -26,11 +26,12 @@ mp_errno_t i2cioexpander_iopin_construct(
 }
 
 void common_hal_i2cioexpander_iopin_deinit(i2cioexpander_iopin_obj_t *self) {
-    self->expander = NULL;
+    // Switch to input on deinit.
+    common_hal_i2cioexpander_iopin_switch_to_input(self, PULL_NONE);
 }
 
 bool common_hal_i2cioexpander_iopin_deinited(i2cioexpander_iopin_obj_t *self) {
-    return self->expander == NULL;
+    return self->expander == NULL || common_hal_i2cioexpander_ioexpander_deinited(self->expander);
 }
 
 digitalinout_result_t common_hal_i2cioexpander_iopin_switch_to_input(
