@@ -11,7 +11,11 @@
 
 #include "shared-bindings/microcontroller/Pin.h"  // for the pin definitions
 
+#if CIRCUITPY_MUTABLE_BOARD
 extern mp_obj_dict_t board_module_globals;
+#else
+extern const mp_obj_dict_t board_module_globals;
+#endif
 static const MP_DEFINE_STR_OBJ(board_module_id_obj, CIRCUITPY_BOARD_ID);
 
 mp_obj_t common_hal_board_get_i2c(const mp_int_t instance);
