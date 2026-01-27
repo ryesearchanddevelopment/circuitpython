@@ -211,8 +211,8 @@ MP_PROPERTY_GETSET(i2cioexpander_ioexpander_output_mask_obj,
     (mp_obj_t)&i2cioexpander_ioexpander_set_output_mask_obj);
 
 //|     @property
-//|     def pins(self) -> Tuple[DigitalInOutProtocol, ...]:
-//|         """A tuple of pin objects that implement the DigitalInOutProtocol.
+//|     def pins(self) -> Tuple[IOPin, ...]:
+//|         """A tuple of `IOPin` objects that implement the DigitalInOutProtocol.
 //|         Each pin can be used like a digitalio.DigitalInOut object."""
 //|         ...
 static mp_obj_t i2cioexpander_ioexpander_obj_get_pins(mp_obj_t self_in) {
