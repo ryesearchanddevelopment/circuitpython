@@ -343,85 +343,90 @@ static const mp_rom_map_elem_t digitalio_digitalinout_locals_dict_table[] = {
 static MP_DEFINE_CONST_DICT(digitalio_digitalinout_locals_dict, digitalio_digitalinout_locals_dict_table);
 
 // Protocol implementation - thin wrappers to match protocol signature
-static void digitalinout_proto_deinit(mp_obj_t self_in) {
+void digitalinout_deinit(mp_obj_t self_in) {
     digitalio_digitalinout_obj_t *self = MP_OBJ_TO_PTR(self_in);
     common_hal_digitalio_digitalinout_deinit(self);
 }
 
-static bool digitalinout_proto_deinited(mp_obj_t self_in) {
+bool digitalinout_deinited(mp_obj_t self_in) {
     digitalio_digitalinout_obj_t *self = MP_OBJ_TO_PTR(self_in);
     return common_hal_digitalio_digitalinout_deinited(self);
 }
 
-static digitalinout_result_t digitalinout_proto_switch_to_input(mp_obj_t self_in, digitalio_pull_t pull) {
+digitalinout_result_t digitalinout_switch_to_input(mp_obj_t self_in, digitalio_pull_t pull) {
     digitalio_digitalinout_obj_t *self = MP_OBJ_TO_PTR(self_in);
     return common_hal_digitalio_digitalinout_switch_to_input(self, pull);
 }
 
-static digitalinout_result_t digitalinout_proto_switch_to_output(mp_obj_t self_in, bool value, digitalio_drive_mode_t drive_mode) {
+digitalinout_result_t digitalinout_switch_to_output(mp_obj_t self_in, bool value, digitalio_drive_mode_t drive_mode) {
     digitalio_digitalinout_obj_t *self = MP_OBJ_TO_PTR(self_in);
     return common_hal_digitalio_digitalinout_switch_to_output(self, value, drive_mode);
 }
 
-static digitalio_direction_t digitalinout_proto_get_direction(mp_obj_t self_in) {
+digitalio_direction_t digitalinout_get_direction(mp_obj_t self_in) {
     digitalio_digitalinout_obj_t *self = MP_OBJ_TO_PTR(self_in);
     return common_hal_digitalio_digitalinout_get_direction(self);
 }
 
-static mp_errno_t digitalinout_proto_set_value(mp_obj_t self_in, bool value) {
+mp_errno_t digitalinout_set_value(mp_obj_t self_in, bool value) {
     digitalio_digitalinout_obj_t *self = MP_OBJ_TO_PTR(self_in);
     common_hal_digitalio_digitalinout_set_value(self, value);
     return 0;
 }
 
-static mp_errno_t digitalinout_proto_get_value(mp_obj_t self_in, bool *value) {
+mp_errno_t digitalinout_get_value(mp_obj_t self_in, bool *value) {
     digitalio_digitalinout_obj_t *self = MP_OBJ_TO_PTR(self_in);
     *value = common_hal_digitalio_digitalinout_get_value(self);
     return 0;
 }
 
-static digitalinout_result_t digitalinout_proto_set_drive_mode(mp_obj_t self_in, digitalio_drive_mode_t drive_mode) {
+digitalinout_result_t digitalinout_set_drive_mode(mp_obj_t self_in, digitalio_drive_mode_t drive_mode) {
     digitalio_digitalinout_obj_t *self = MP_OBJ_TO_PTR(self_in);
     return common_hal_digitalio_digitalinout_set_drive_mode(self, drive_mode);
 }
 
-static digitalio_drive_mode_t digitalinout_proto_get_drive_mode(mp_obj_t self_in) {
+digitalio_drive_mode_t digitalinout_get_drive_mode(mp_obj_t self_in) {
     digitalio_digitalinout_obj_t *self = MP_OBJ_TO_PTR(self_in);
     return common_hal_digitalio_digitalinout_get_drive_mode(self);
 }
 
-static digitalinout_result_t digitalinout_proto_set_pull(mp_obj_t self_in, digitalio_pull_t pull) {
+digitalinout_result_t digitalinout_set_pull(mp_obj_t self_in, digitalio_pull_t pull) {
     digitalio_digitalinout_obj_t *self = MP_OBJ_TO_PTR(self_in);
     return common_hal_digitalio_digitalinout_set_pull(self, pull);
 }
 
-static digitalio_pull_t digitalinout_proto_get_pull(mp_obj_t self_in) {
+digitalio_pull_t digitalinout_get_pull(mp_obj_t self_in) {
     digitalio_digitalinout_obj_t *self = MP_OBJ_TO_PTR(self_in);
     return common_hal_digitalio_digitalinout_get_pull(self);
 }
 
+#if CIRCUITPY_DIGITALINOUT_PROTOCOL
 static const digitalinout_p_t digitalinout_digitalinout_proto = {
-    MP_PROTO_IMPLEMENT(MP_QSTR_protocol_digitalinout)
-    .deinit = digitalinout_proto_deinit,
-    .deinited = digitalinout_proto_deinited,
-    .switch_to_input = digitalinout_proto_switch_to_input,
-    .switch_to_output = digitalinout_proto_switch_to_output,
-    .get_direction = digitalinout_proto_get_direction,
-    .get_value = digitalinout_proto_get_value,
-    .set_value = digitalinout_proto_set_value,
-    .get_drive_mode = digitalinout_proto_get_drive_mode,
-    .set_drive_mode = digitalinout_proto_set_drive_mode,
-    .get_pull = digitalinout_proto_get_pull,
-    .set_pull = digitalinout_proto_set_pull,
+    MP_PROTO_IMPLEMENT(MP_QSTR_DigitalInOut)
+    .deinit = digitalinout_deinit,
+    .deinited = digitalinout_deinited,
+    .switch_to_input = digitalinout_switch_to_input,
+    .switch_to_output = digitalinout_switch_to_output,
+    .get_direction = digitalinout_get_direction,
+    .get_value = digitalinout_get_value,
+    .set_value = digitalinout_set_value,
+    .get_drive_mode = digitalinout_get_drive_mode,
+    .set_drive_mode = digitalinout_set_drive_mode,
+    .get_pull = digitalinout_get_pull,
+    .set_pull = digitalinout_set_pull,
 };
+#endif
 
 MP_DEFINE_CONST_OBJ_TYPE(
     digitalio_digitalinout_type,
     MP_QSTR_DigitalInOut,
     MP_TYPE_FLAG_HAS_SPECIAL_ACCESSORS,
     make_new, digitalio_digitalinout_make_new,
-    locals_dict, &digitalio_digitalinout_locals_dict,
+    locals_dict, &digitalio_digitalinout_locals_dict
+    #if CIRCUITPY_DIGITALINOUT_PROTOCOL
+    ,
     protocol, &digitalinout_digitalinout_proto
+    #endif
     );
 
 // Helper for validating digitalio.DigitalInOut arguments

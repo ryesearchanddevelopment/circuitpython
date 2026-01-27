@@ -313,7 +313,7 @@ msgstr ""
 msgid "'%q' argument required"
 msgstr ""
 
-#: py/proto.c
+#: py/proto.c shared-bindings/digitalio/DigitalInOutProtocol.c
 msgid "'%q' object does not support '%q'"
 msgstr ""
 

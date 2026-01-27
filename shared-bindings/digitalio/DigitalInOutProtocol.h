@@ -19,7 +19,7 @@
 // Protocol structure for DigitalInOut implementations
 // Note: mcu_pin_obj_t and digitalinout_result_t are defined by files that include this header
 typedef struct _digitalinout_p_t {
-    MP_PROTOCOL_HEAD // MP_QSTR_protocol_digitalinout
+    MP_PROTOCOL_HEAD // MP_QSTR_DigitalInOut
     void (*deinit)(mp_obj_t self);
     bool (*deinited)(mp_obj_t self);
     digitalinout_result_t (*switch_to_input)(mp_obj_t self, digitalio_pull_t pull);
@@ -54,6 +54,8 @@ mp_obj_t digitalinout_protocol_from_pin(
     bool force_port_allocation,
     bool *out_owns_pin);
 
+#if CIRCUITPY_DIGITALINOUT_PROTOCOL
+// Protocol helper functions that do protocol lookup or Python fallback
 void digitalinout_protocol_deinit(mp_obj_t self);
 bool digitalinout_protocol_deinited(mp_obj_t self);
 digitalinout_result_t digitalinout_protocol_switch_to_input(mp_obj_t self, digitalio_pull_t pull);
@@ -65,3 +67,17 @@ digitalinout_result_t digitalinout_protocol_set_drive_mode(mp_obj_t self, digita
 digitalio_drive_mode_t digitalinout_protocol_get_drive_mode(mp_obj_t self);
 digitalinout_result_t digitalinout_protocol_set_pull(mp_obj_t self, digitalio_pull_t pull);
 digitalio_pull_t digitalinout_protocol_get_pull(mp_obj_t self);
+#else
+// When protocol is disabled, map directly to native DigitalInOut functions
+#define digitalinout_protocol_deinit digitalinout_deinit
+#define digitalinout_protocol_deinited digitalinout_deinited
+#define digitalinout_protocol_switch_to_input digitalinout_switch_to_input
+#define digitalinout_protocol_switch_to_output digitalinout_switch_to_output
+#define digitalinout_protocol_get_direction digitalinout_get_direction
+#define digitalinout_protocol_set_value digitalinout_set_value
+#define digitalinout_protocol_get_value digitalinout_get_value
+#define digitalinout_protocol_set_drive_mode digitalinout_set_drive_mode
+#define digitalinout_protocol_get_drive_mode digitalinout_get_drive_mode
+#define digitalinout_protocol_set_pull digitalinout_set_pull
+#define digitalinout_protocol_get_pull digitalinout_get_pull
+#endif

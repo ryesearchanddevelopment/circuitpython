@@ -102,7 +102,7 @@
 //
 // Example:
 //   static const digitalinout_p_t my_type_proto = {
-//       MP_PROTO_IMPLEMENT(MP_QSTR_protocol_digitalinout)
+//       MP_PROTO_IMPLEMENT(MP_QSTR_DigitalInOut)
 //       .construct = my_construct_func,
 //       .deinit = my_deinit_func,
 //       .deinited = my_deinited_func,
@@ -128,7 +128,7 @@
 // See shared-bindings/digitalio/DigitalInOut.c for a complete example.
 //
 
-
+#if CIRCUITPY_DIGITALINOUT_PROTOCOL
 static void check_object_has_method(mp_obj_t obj, qstr method_name) {
     mp_obj_t dest[2];
     mp_load_method_protected(obj, method_name, dest, true);
@@ -144,6 +144,7 @@ static void check_object_has_attr(mp_obj_t obj, qstr attr_name) {
         mp_raise_TypeError_varg(MP_ERROR_TEXT("%q object missing '%q' attribute"), MP_OBJ_TO_PTR(obj), attr_name);
     }
 }
+#endif
 
 mp_obj_t digitalinout_protocol_from_pin(
     mp_obj_t pin_or_dio,
@@ -195,8 +196,9 @@ mp_obj_t digitalinout_protocol_from_pin(
         return dio_obj;
     }
 
+    #if CIRCUITPY_DIGITALINOUT_PROTOCOL
     // Check if it natively implements the DigitalInOutProtocol
-    const digitalinout_p_t *proto = mp_proto_get(MP_QSTR_protocol_digitalinout, pin_or_dio);
+    const digitalinout_p_t *proto = mp_proto_get(MP_QSTR_DigitalInOut, pin_or_dio);
     if (proto != NULL) {
         // Native protocol support - use it directly
         return pin_or_dio;
@@ -214,8 +216,15 @@ mp_obj_t digitalinout_protocol_from_pin(
 
     // Object has all required attributes - use it as DigitalInOutProtocol
     return pin_or_dio;
+    #else
+    mp_raise_TypeError_varg(MP_ERROR_TEXT("'%q' object does not support '%q'"),
+        mp_obj_get_type_qstr(pin_or_dio), MP_QSTR_DigitalInOut);
+    #endif
 }
 
+// These functions are only used when CIRCUITPY_DIGITALINOUT_PROTOCOL is enabled.
+// Otherwise, the digitalinout_* functions are called directly.
+#if CIRCUITPY_DIGITALINOUT_PROTOCOL
 void digitalinout_protocol_deinit(mp_obj_t self) {
     const digitalinout_p_t *proto = mp_proto_get(MP_QSTR_protocol_digitalinout, self);
     if (proto && proto->deinit) {
@@ -233,7 +242,7 @@ void digitalinout_protocol_deinit(mp_obj_t self) {
 }
 
 bool digitalinout_protocol_deinited(mp_obj_t self) {
-    const digitalinout_p_t *proto = mp_proto_get(MP_QSTR_protocol_digitalinout, self);
+    const digitalinout_p_t *proto = mp_proto_get(MP_QSTR_DigitalInOut, self);
     if (proto && proto->deinited) {
         return proto->deinited(self);
     }
@@ -244,7 +253,7 @@ bool digitalinout_protocol_deinited(mp_obj_t self) {
 }
 
 digitalinout_result_t digitalinout_protocol_switch_to_input(mp_obj_t self, digitalio_pull_t pull) {
-    const digitalinout_p_t *proto = mp_proto_get(MP_QSTR_protocol_digitalinout, self);
+    const digitalinout_p_t *proto = mp_proto_get(MP_QSTR_DigitalInOut, self);
     if (proto && proto->switch_to_input) {
         return proto->switch_to_input(self, pull);
     }
@@ -268,7 +277,7 @@ digitalinout_result_t digitalinout_protocol_switch_to_input(mp_obj_t self, digit
 }
 
 digitalinout_result_t digitalinout_protocol_switch_to_output(mp_obj_t self, bool value, digitalio_drive_mode_t drive_mode) {
-    const digitalinout_p_t *proto = mp_proto_get(MP_QSTR_protocol_digitalinout, self);
+    const digitalinout_p_t *proto = mp_proto_get(MP_QSTR_DigitalInOut, self);
     if (proto && proto->switch_to_output) {
         return proto->switch_to_output(self, value, drive_mode);
     }
@@ -289,7 +298,7 @@ digitalinout_result_t digitalinout_protocol_switch_to_output(mp_obj_t self, bool
 }
 
 digitalio_direction_t digitalinout_protocol_get_direction(mp_obj_t self) {
-    const digitalinout_p_t *proto = mp_proto_get(MP_QSTR_protocol_digitalinout, self);
+    const digitalinout_p_t *proto = mp_proto_get(MP_QSTR_DigitalInOut, self);
     if (proto && proto->get_direction) {
         return proto->get_direction(self);
     }
@@ -303,7 +312,7 @@ digitalio_direction_t digitalinout_protocol_get_direction(mp_obj_t self) {
 }
 
 mp_errno_t digitalinout_protocol_set_value(mp_obj_t self, bool value) {
-    const digitalinout_p_t *proto = mp_proto_get(MP_QSTR_protocol_digitalinout, self);
+    const digitalinout_p_t *proto = mp_proto_get(MP_QSTR_DigitalInOut, self);
     if (proto && proto->set_value) {
         return proto->set_value(self, value);
     }
@@ -314,7 +323,7 @@ mp_errno_t digitalinout_protocol_set_value(mp_obj_t self, bool value) {
 }
 
 mp_errno_t digitalinout_protocol_get_value(mp_obj_t self, bool *value) {
-    const digitalinout_p_t *proto = mp_proto_get(MP_QSTR_protocol_digitalinout, self);
+    const digitalinout_p_t *proto = mp_proto_get(MP_QSTR_DigitalInOut, self);
     if (proto && proto->get_value) {
         return proto->get_value(self, value);
     }
@@ -325,7 +334,7 @@ mp_errno_t digitalinout_protocol_get_value(mp_obj_t self, bool *value) {
 }
 
 digitalinout_result_t digitalinout_protocol_set_drive_mode(mp_obj_t self, digitalio_drive_mode_t drive_mode) {
-    const digitalinout_p_t *proto = mp_proto_get(MP_QSTR_protocol_digitalinout, self);
+    const digitalinout_p_t *proto = mp_proto_get(MP_QSTR_DigitalInOut, self);
     if (proto && proto->set_drive_mode) {
         return proto->set_drive_mode(self, drive_mode);
     }
@@ -339,7 +348,7 @@ digitalinout_result_t digitalinout_protocol_set_drive_mode(mp_obj_t self, digita
 }
 
 digitalio_drive_mode_t digitalinout_protocol_get_drive_mode(mp_obj_t self) {
-    const digitalinout_p_t *proto = mp_proto_get(MP_QSTR_protocol_digitalinout, self);
+    const digitalinout_p_t *proto = mp_proto_get(MP_QSTR_DigitalInOut, self);
     if (proto && proto->get_drive_mode) {
         return proto->get_drive_mode(self);
     }
@@ -353,7 +362,7 @@ digitalio_drive_mode_t digitalinout_protocol_get_drive_mode(mp_obj_t self) {
 }
 
 digitalinout_result_t digitalinout_protocol_set_pull(mp_obj_t self, digitalio_pull_t pull) {
-    const digitalinout_p_t *proto = mp_proto_get(MP_QSTR_protocol_digitalinout, self);
+    const digitalinout_p_t *proto = mp_proto_get(MP_QSTR_DigitalInOut, self);
     if (proto && proto->set_pull) {
         return proto->set_pull(self, pull);
     }
@@ -370,7 +379,7 @@ digitalinout_result_t digitalinout_protocol_set_pull(mp_obj_t self, digitalio_pu
 }
 
 digitalio_pull_t digitalinout_protocol_get_pull(mp_obj_t self) {
-    const digitalinout_p_t *proto = mp_proto_get(MP_QSTR_protocol_digitalinout, self);
+    const digitalinout_p_t *proto = mp_proto_get(MP_QSTR_DigitalInOut, self);
     if (proto && proto->get_pull) {
         return proto->get_pull(self);
     }
@@ -384,3 +393,5 @@ digitalio_pull_t digitalinout_protocol_get_pull(mp_obj_t self) {
     }
     return PULL_NONE;
 }
+
+#endif // CIRCUITPY_DIGITALINOUT_PROTOCOL

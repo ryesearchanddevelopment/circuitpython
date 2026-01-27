@@ -290,7 +290,7 @@ static digitalinout_result_t iopin_protocol_set_pull(mp_obj_t self_in, digitalio
 }
 
 static const digitalinout_p_t iopin_digitalinout_p = {
-    MP_PROTO_IMPLEMENT(MP_QSTR_protocol_digitalinout)
+    MP_PROTO_IMPLEMENT(MP_QSTR_DigitalInOut)
     .deinit = iopin_protocol_deinit,
     .deinited = iopin_protocol_deinited,
     .switch_to_input = iopin_protocol_switch_to_input,
