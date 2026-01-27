@@ -74,10 +74,10 @@ static void gc_helper_get_regs(gc_helper_regs_t arr) {
 #elif defined(__i386__)
 
 static void gc_helper_get_regs(gc_helper_regs_t arr) {
-    register long ebx asm ("ebx");
-    register long esi asm ("esi");
-    register long edi asm ("edi");
-    register long ebp asm ("ebp");
+    register long ebx __asm__ ("ebx");
+    register long esi __asm__ ("esi");
+    register long edi __asm__ ("edi");
+    register long ebp __asm__ ("ebp");
     #ifdef __clang__
     // TODO:
     // This is dirty workaround for Clang. It tries to get around

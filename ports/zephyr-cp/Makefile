@@ -8,7 +8,7 @@ BUILD ?= build-$(BOARD)
 
 TRANSLATION ?= en_US
 
-.PHONY: $(BUILD)/zephyr-cp/zephyr/zephyr.elf flash debug clean menuconfig all clean-all test
+.PHONY: $(BUILD)/zephyr-cp/zephyr/zephyr.elf flash debug run clean menuconfig all clean-all test
 
 $(BUILD)/zephyr-cp/zephyr/zephyr.elf:
 	python cptools/pre_zephyr_build_prep.py $(BOARD)
@@ -20,11 +20,17 @@ $(BUILD)/firmware.elf: $(BUILD)/zephyr-cp/zephyr/zephyr.elf
 $(BUILD)/firmware.hex: $(BUILD)/zephyr-cp/zephyr/zephyr.elf
 	cp $(BUILD)/zephyr-cp/zephyr/zephyr.hex $@
 
+$(BUILD)/firmware.exe: $(BUILD)/zephyr-cp/zephyr/zephyr.elf
+	cp $(BUILD)/zephyr-cp/zephyr/zephyr.exe $@
+
 flash: $(BUILD)/zephyr-cp/zephyr/zephyr.elf
 	west flash -d $(BUILD)
 
 debug: $(BUILD)/zephyr-cp/zephyr/zephyr.elf
 	west debug -d $(BUILD)
+
+run: $(BUILD)/firmware.exe
+	$^
 
 menuconfig:
 	west build --sysbuild -d $(BUILD) -t menuconfig
