@@ -4,7 +4,7 @@
 //
 // SPDX-License-Identifier: MIT
 
-#define MICROPY_HW_BOARD_NAME "Adafruit Freensy RP2350"
+#define MICROPY_HW_BOARD_NAME "Adafruit Tinychad RP2350"
 #define MICROPY_HW_MCU_NAME "rp2350a"
 
 #define MICROPY_HW_NEOPIXEL (&pin_GPIO17)
