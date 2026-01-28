@@ -46,5 +46,6 @@ all:
 clean-all:
 	rm -rf build build-*
 
-test:
+test: build-native_native_sim/zephyr-cp/zephyr/zephyr.exe
 	pytest cptools/tests
+	pytest tests/ -v

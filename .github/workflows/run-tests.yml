@@ -88,5 +88,5 @@ jobs:
         uses: ./.github/actions/deps/ports/zephyr-cp
       - name: Set up external
         uses: ./.github/actions/deps/external
-      - name: Run Zephyr build tests
+      - name: Run Zephyr tests
         run: make -C ports/zephyr-cp test
