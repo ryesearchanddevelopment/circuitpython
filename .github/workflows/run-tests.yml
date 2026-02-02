@@ -88,5 +88,7 @@ jobs:
         uses: ./.github/actions/deps/ports/zephyr-cp
       - name: Set up external
         uses: ./.github/actions/deps/external
+      - name: Build native sim target
+        run: make -C ports/zephyr-cp -j2 BOARD=native_native_sim
       - name: Run Zephyr tests
         run: make -C ports/zephyr-cp test
