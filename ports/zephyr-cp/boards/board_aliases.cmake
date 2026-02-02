@@ -1,4 +1,5 @@
 set(pca10056_BOARD_ALIAS nrf52840dk/nrf52840)
+set(adafruit_feather_nrf52840_zephyr_BOARD_ALIAS adafruit_feather_nrf52840/nrf52840/uf2)
 set(renesas_ek_ra6m5_BOARD_ALIAS ek_ra6m5)
 set(renesas_ek_ra8d1_BOARD_ALIAS ek_ra8d1)
 set(renesas_da14695_dk_usb_BOARD_ALIAS da14695_dk_usb)

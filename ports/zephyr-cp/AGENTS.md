@@ -3,3 +3,4 @@
 - The files (not folders) in `boards/` directory are used by Zephyr.
 - To flash it on a board do `make BOARD=<vendor>_<board_name> flash`.
 - Zephyr board docs are at `zephyr/boards/<vendor>/<board_name>`.
+- Run zephyr-cp tests with `make test`.

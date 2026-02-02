@@ -20,7 +20,9 @@ MANUAL_COMPAT_TO_DRIVER = {
     "nordic_nrf_uarte": "serial",
     "nordic_nrf_uart": "serial",
     "nordic_nrf_twim": "i2c",
+    "nordic_nrf_twi": "i2c",
     "nordic_nrf_spim": "spi",
+    "nordic_nrf_spi": "spi",
 }
 
 # These are controllers, not the flash devices themselves.
@@ -802,5 +804,6 @@ MP_DEFINE_CONST_DICT(board_module_globals, board_module_globals_table);
     board_info["source_files"] = [board_c]
     board_info["cflags"] = ("-I", board_dir)
     board_info["flash_count"] = len(flashes)
+    board_info["rotaryio"] = bool(ioports)
     board_info["usb_num_endpoint_pairs"] = usb_num_endpoint_pairs
     return board_info

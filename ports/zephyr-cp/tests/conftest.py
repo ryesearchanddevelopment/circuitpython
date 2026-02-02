@@ -14,6 +14,7 @@ from pathlib import Path
 import pytest
 import serial
 from . import NativeSimProcess
+from .perfetto_input_trace import write_input_trace
 
 from perfetto.trace_processor import TraceProcessor
 
@@ -41,6 +42,10 @@ def pytest_configure(config):
     config.addinivalue_line(
         "markers",
         "code_py_runs(count): stop native_sim after count code.py runs (default: 1)",
+    )
+    config.addinivalue_line(
+        "markers",
+        "input_trace(trace): inject input signal trace data into native_sim",
     )
 
 
@@ -117,7 +122,6 @@ def log_uart_trace_output(trace_file: Path) -> None:
 @pytest.fixture
 def board(request):
     board = request.node.get_closest_marker("circuitpython_board")
-    print("board", board)
     if board is not None:
         board = board.args[0]
     else:
@@ -159,6 +163,14 @@ def circuitpython(request, board, sim_id, native_sim_binary, native_sim_env, tmp
     if len(drives) != instance_count:
         raise RuntimeError(f"not enough drives for {instance_count} instances")
 
+    input_trace_markers = list(request.node.iter_markers_with_node("input_trace"))
+    if len(input_trace_markers) > 1:
+        raise RuntimeError("expected at most one input_trace marker")
+
+    input_trace = None
+    if input_trace_markers and len(input_trace_markers[0][1].args) == 1:
+        input_trace = input_trace_markers[0][1].args[0]
+
     procs = []
     for i in range(instance_count):
         flash = tmp_path / f"flash-{i}.bin"
@@ -177,6 +189,11 @@ def circuitpython(request, board, sim_id, native_sim_binary, native_sim_env, tmp
                 subprocess.run(["mcopy", "-i", str(flash), str(src), f"::{name}"], check=True)
 
         trace_file = tmp_path / f"trace-{i}.perfetto"
+
+        input_trace_file = None
+        if input_trace is not None:
+            input_trace_file = tmp_path / f"input-{i}.perfetto"
+            write_input_trace(input_trace_file, input_trace)
 
         marker = request.node.get_closest_marker("duration")
         if marker is None:
@@ -208,6 +225,9 @@ def circuitpython(request, board, sim_id, native_sim_binary, native_sim_env, tmp
             cmd = [str(native_sim_binary), f"--flash={flash}"]
             # native_sim vm-runs includes the boot VM setup run.
             cmd.extend(("-no-rt", "-wait_uart", f"--vm-runs={code_py_runs + 1}"))
+
+        if input_trace_file is not None:
+            cmd.append(f"--input-trace={input_trace_file}")
 
         marker = request.node.get_closest_marker("disable_i2c_devices")
         if marker and len(marker.args) > 0:
