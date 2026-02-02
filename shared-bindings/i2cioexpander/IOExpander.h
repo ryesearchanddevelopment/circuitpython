@@ -23,12 +23,12 @@ void common_hal_i2cioexpander_ioexpander_construct(
 void common_hal_i2cioexpander_ioexpander_deinit(i2cioexpander_ioexpander_obj_t *self);
 bool common_hal_i2cioexpander_ioexpander_deinited(i2cioexpander_ioexpander_obj_t *self);
 
-mp_errno_t common_hal_i2cioexpander_ioexpander_get_input_value(i2cioexpander_ioexpander_obj_t *self, size_t *value);
+mp_negative_errno_t common_hal_i2cioexpander_ioexpander_get_input_value(i2cioexpander_ioexpander_obj_t *self, size_t *value);
 // No error return because this returns a cached value.
 void common_hal_i2cioexpander_ioexpander_get_output_value(i2cioexpander_ioexpander_obj_t *self, size_t *value);
-mp_errno_t common_hal_i2cioexpander_ioexpander_set_output_value(i2cioexpander_ioexpander_obj_t *self, size_t value);
+mp_negative_errno_t common_hal_i2cioexpander_ioexpander_set_output_value(i2cioexpander_ioexpander_obj_t *self, size_t value);
 
 void common_hal_i2cioexpander_ioexpander_get_output_mask(i2cioexpander_ioexpander_obj_t *self, size_t *mask);
-mp_errno_t common_hal_i2cioexpander_ioexpander_set_output_mask(i2cioexpander_ioexpander_obj_t *self, size_t mask);
+mp_negative_errno_t common_hal_i2cioexpander_ioexpander_set_output_mask(i2cioexpander_ioexpander_obj_t *self, size_t mask);
 
 mp_obj_t common_hal_i2cioexpander_ioexpander_get_pins(i2cioexpander_ioexpander_obj_t *self);

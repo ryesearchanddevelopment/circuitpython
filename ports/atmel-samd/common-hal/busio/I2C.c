@@ -176,7 +176,7 @@ void common_hal_busio_i2c_unlock(busio_i2c_obj_t *self) {
     self->has_lock = false;
 }
 
-static mp_errno_t _common_hal_busio_i2c_write(busio_i2c_obj_t *self, uint16_t addr,
+static mp_negative_errno_t _common_hal_busio_i2c_write(busio_i2c_obj_t *self, uint16_t addr,
     const uint8_t *data, size_t len, bool transmit_stop_bit) {
 
     uint16_t attempts = ATTEMPTS;
@@ -202,12 +202,12 @@ static mp_errno_t _common_hal_busio_i2c_write(busio_i2c_obj_t *self, uint16_t ad
     return -MP_EIO;
 }
 
-mp_errno_t common_hal_busio_i2c_write(busio_i2c_obj_t *self, uint16_t addr,
+mp_negative_errno_t common_hal_busio_i2c_write(busio_i2c_obj_t *self, uint16_t addr,
     const uint8_t *data, size_t len) {
     return _common_hal_busio_i2c_write(self, addr, data, len, true);
 }
 
-mp_errno_t common_hal_busio_i2c_read(busio_i2c_obj_t *self, uint16_t addr,
+mp_negative_errno_t common_hal_busio_i2c_read(busio_i2c_obj_t *self, uint16_t addr,
     uint8_t *data, size_t len) {
 
     uint16_t attempts = ATTEMPTS;
@@ -233,9 +233,9 @@ mp_errno_t common_hal_busio_i2c_read(busio_i2c_obj_t *self, uint16_t addr,
     return -MP_EIO;
 }
 
-mp_errno_t common_hal_busio_i2c_write_read(busio_i2c_obj_t *self, uint16_t addr,
+mp_negative_errno_t common_hal_busio_i2c_write_read(busio_i2c_obj_t *self, uint16_t addr,
     uint8_t *out_data, size_t out_len, uint8_t *in_data, size_t in_len) {
-    mp_errno_t result = _common_hal_busio_i2c_write(self, addr, out_data, out_len, false);
+    mp_negative_errno_t result = _common_hal_busio_i2c_write(self, addr, out_data, out_len, false);
     if (result != 0) {
         return result;
     }

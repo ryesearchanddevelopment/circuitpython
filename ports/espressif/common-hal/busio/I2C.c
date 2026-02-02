@@ -169,7 +169,7 @@ void common_hal_busio_i2c_unlock(busio_i2c_obj_t *self) {
     self->has_lock = false;
 }
 
-static mp_errno_t convert_esp_err(esp_err_t result) {
+static mp_negative_errno_t convert_esp_err(esp_err_t result) {
     switch (result) {
         case ESP_OK:
             return 0;
@@ -189,7 +189,7 @@ static size_t _transaction_duration_ms(size_t frequency, size_t len) {
     return (len + 1) / bytes_per_ms + 1000;
 }
 
-mp_errno_t common_hal_busio_i2c_write(busio_i2c_obj_t *self, uint16_t addr, const uint8_t *data, size_t len) {
+mp_negative_errno_t common_hal_busio_i2c_write(busio_i2c_obj_t *self, uint16_t addr, const uint8_t *data, size_t len) {
     i2c_device_config_t dev_config = {
         .dev_addr_length = I2C_ADDR_BIT_LEN_7,
         .device_address = addr,
@@ -202,7 +202,7 @@ mp_errno_t common_hal_busio_i2c_write(busio_i2c_obj_t *self, uint16_t addr, cons
     return convert_esp_err(result);
 }
 
-mp_errno_t common_hal_busio_i2c_read(busio_i2c_obj_t *self, uint16_t addr, uint8_t *data, size_t len) {
+mp_negative_errno_t common_hal_busio_i2c_read(busio_i2c_obj_t *self, uint16_t addr, uint8_t *data, size_t len) {
     i2c_device_config_t dev_config = {
         .dev_addr_length = I2C_ADDR_BIT_LEN_7,
         .device_address = addr,
@@ -215,7 +215,7 @@ mp_errno_t common_hal_busio_i2c_read(busio_i2c_obj_t *self, uint16_t addr, uint8
     return convert_esp_err(result);
 }
 
-mp_errno_t common_hal_busio_i2c_write_read(busio_i2c_obj_t *self, uint16_t addr,
+mp_negative_errno_t common_hal_busio_i2c_write_read(busio_i2c_obj_t *self, uint16_t addr,
     uint8_t *out_data, size_t out_len, uint8_t *in_data, size_t in_len) {
     i2c_device_config_t dev_config = {
         .dev_addr_length = I2C_ADDR_BIT_LEN_7,

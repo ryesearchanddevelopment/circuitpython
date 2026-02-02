@@ -37,12 +37,12 @@ uint8_t common_hal_sdioio_sdcard_get_width(sdioio_sdcard_obj_t *self);
 uint32_t common_hal_sdioio_sdcard_get_count(sdioio_sdcard_obj_t *self);
 
 // Read or write blocks - returns 0 on success or negative error code from mperrno.h
-mp_errno_t common_hal_sdioio_sdcard_readblocks(sdioio_sdcard_obj_t *self, uint32_t start_block, mp_buffer_info_t *bufinfo);
-mp_errno_t common_hal_sdioio_sdcard_writeblocks(sdioio_sdcard_obj_t *self, uint32_t start_block, mp_buffer_info_t *bufinfo);
+mp_negative_errno_t common_hal_sdioio_sdcard_readblocks(sdioio_sdcard_obj_t *self, uint32_t start_block, mp_buffer_info_t *bufinfo);
+mp_negative_errno_t common_hal_sdioio_sdcard_writeblocks(sdioio_sdcard_obj_t *self, uint32_t start_block, mp_buffer_info_t *bufinfo);
 
 // Used by native vfs blockdev.
-mp_errno_t sdioio_sdcard_readblocks(mp_obj_t self_in, uint8_t *buf, uint32_t start_block, uint32_t buflen);
-mp_errno_t sdioio_sdcard_writeblocks(mp_obj_t self_in, uint8_t *buf, uint32_t start_block, uint32_t buflen);
+mp_negative_errno_t sdioio_sdcard_readblocks(mp_obj_t self_in, uint8_t *buf, uint32_t start_block, uint32_t buflen);
+mp_negative_errno_t sdioio_sdcard_writeblocks(mp_obj_t self_in, uint8_t *buf, uint32_t start_block, uint32_t buflen);
 bool sdioio_sdcard_ioctl(mp_obj_t self_in, size_t cmd, size_t arg, mp_int_t *out_value);
 
 // This is used by the supervisor to claim SDIO devices indefinitely.

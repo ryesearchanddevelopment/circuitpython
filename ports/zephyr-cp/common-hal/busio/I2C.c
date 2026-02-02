@@ -73,7 +73,7 @@ void common_hal_busio_i2c_unlock(busio_i2c_obj_t *self) {
     k_mutex_unlock(&self->mutex);
 }
 
-mp_errno_t common_hal_busio_i2c_write(busio_i2c_obj_t *self, uint16_t addr,
+mp_negative_errno_t common_hal_busio_i2c_write(busio_i2c_obj_t *self, uint16_t addr,
     const uint8_t *data, size_t len) {
 
     if (common_hal_busio_i2c_deinited(self)) {
@@ -96,7 +96,7 @@ mp_errno_t common_hal_busio_i2c_write(busio_i2c_obj_t *self, uint16_t addr,
     return 0;
 }
 
-mp_errno_t common_hal_busio_i2c_read(busio_i2c_obj_t *self, uint16_t addr,
+mp_negative_errno_t common_hal_busio_i2c_read(busio_i2c_obj_t *self, uint16_t addr,
     uint8_t *data, size_t len) {
 
     if (common_hal_busio_i2c_deinited(self)) {
@@ -123,7 +123,7 @@ mp_errno_t common_hal_busio_i2c_read(busio_i2c_obj_t *self, uint16_t addr,
     return 0;
 }
 
-mp_errno_t common_hal_busio_i2c_write_read(busio_i2c_obj_t *self, uint16_t addr,
+mp_negative_errno_t common_hal_busio_i2c_write_read(busio_i2c_obj_t *self, uint16_t addr,
     uint8_t *out_data, size_t out_len, uint8_t *in_data, size_t in_len) {
 
     if (common_hal_busio_i2c_deinited(self)) {

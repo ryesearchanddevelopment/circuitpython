@@ -311,7 +311,7 @@ digitalio_direction_t digitalinout_protocol_get_direction(mp_obj_t self) {
     return DIRECTION_OUTPUT;
 }
 
-mp_errno_t digitalinout_protocol_set_value(mp_obj_t self, bool value) {
+mp_negative_errno_t digitalinout_protocol_set_value(mp_obj_t self, bool value) {
     const digitalinout_p_t *proto = mp_proto_get(MP_QSTR_DigitalInOut, self);
     if (proto && proto->set_value) {
         return proto->set_value(self, value);
@@ -322,7 +322,7 @@ mp_errno_t digitalinout_protocol_set_value(mp_obj_t self, bool value) {
     return 0;
 }
 
-mp_errno_t digitalinout_protocol_get_value(mp_obj_t self, bool *value) {
+mp_negative_errno_t digitalinout_protocol_get_value(mp_obj_t self, bool *value) {
     const digitalinout_p_t *proto = mp_proto_get(MP_QSTR_DigitalInOut, self);
     if (proto && proto->get_value) {
         return proto->get_value(self, value);

@@ -81,7 +81,7 @@ bool common_hal_i2cioexpander_ioexpander_deinited(i2cioexpander_ioexpander_obj_t
     return self->i2c == NULL;
 }
 
-mp_errno_t common_hal_i2cioexpander_ioexpander_get_input_value(i2cioexpander_ioexpander_obj_t *self, size_t *value) {
+mp_negative_errno_t common_hal_i2cioexpander_ioexpander_get_input_value(i2cioexpander_ioexpander_obj_t *self, size_t *value) {
     uint8_t buffer[2];
     uint8_t num_bytes = (self->num_pins > 8) ? 2 : 1;
 
@@ -89,7 +89,7 @@ mp_errno_t common_hal_i2cioexpander_ioexpander_get_input_value(i2cioexpander_ioe
         RUN_BACKGROUND_TASKS;
     }
 
-    mp_errno_t result;
+    mp_negative_errno_t result;
     if (self->has_get_value) {
         // Send register address then read
         result = common_hal_busio_i2c_write_read(
@@ -116,7 +116,7 @@ void common_hal_i2cioexpander_ioexpander_get_output_value(i2cioexpander_ioexpand
     *value = self->output_value;
 }
 
-mp_errno_t common_hal_i2cioexpander_ioexpander_set_output_value(i2cioexpander_ioexpander_obj_t *self, size_t value) {
+mp_negative_errno_t common_hal_i2cioexpander_ioexpander_set_output_value(i2cioexpander_ioexpander_obj_t *self, size_t value) {
     uint8_t buffer[5];
     uint8_t num_bytes = 0;
 
@@ -147,7 +147,7 @@ mp_errno_t common_hal_i2cioexpander_ioexpander_set_output_value(i2cioexpander_io
         return -MP_EBUSY;
     }
 
-    mp_errno_t result = common_hal_busio_i2c_write(self->i2c, self->address, buffer, num_bytes);
+    mp_negative_errno_t result = common_hal_busio_i2c_write(self->i2c, self->address, buffer, num_bytes);
     common_hal_busio_i2c_unlock(self->i2c);
     if (result == 0) {
         self->output_value = value;
@@ -159,7 +159,7 @@ void common_hal_i2cioexpander_ioexpander_get_output_mask(i2cioexpander_ioexpande
     *mask = self->output_mask;
 }
 
-mp_errno_t common_hal_i2cioexpander_ioexpander_set_output_mask(i2cioexpander_ioexpander_obj_t *self, size_t mask) {
+mp_negative_errno_t common_hal_i2cioexpander_ioexpander_set_output_mask(i2cioexpander_ioexpander_obj_t *self, size_t mask) {
     self->output_mask = mask;
 
     // Only write to device if direction register is provided
@@ -186,7 +186,7 @@ mp_errno_t common_hal_i2cioexpander_ioexpander_set_output_mask(i2cioexpander_ioe
         return -MP_EBUSY;
     }
 
-    mp_errno_t result = common_hal_busio_i2c_write(self->i2c, self->address, buffer, num_bytes);
+    mp_negative_errno_t result = common_hal_busio_i2c_write(self->i2c, self->address, buffer, num_bytes);
     common_hal_busio_i2c_unlock(self->i2c);
     return result;
 }

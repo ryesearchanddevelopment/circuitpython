@@ -242,7 +242,7 @@ static void check_for_deinit(sdioio_sdcard_obj_t *self) {
 }
 
 // Native function for VFS blockdev layer
-mp_errno_t sdioio_sdcard_writeblocks(mp_obj_t self_in, uint8_t *buf,
+mp_negative_errno_t sdioio_sdcard_writeblocks(mp_obj_t self_in, uint8_t *buf,
     uint32_t start_block, uint32_t num_blocks) {
     sdioio_sdcard_obj_t *self = MP_OBJ_TO_PTR(self_in);
     wait_write_complete(self);
@@ -262,7 +262,7 @@ mp_errno_t sdioio_sdcard_writeblocks(mp_obj_t self_in, uint8_t *buf,
     return 0;
 }
 
-mp_errno_t common_hal_sdioio_sdcard_writeblocks(sdioio_sdcard_obj_t *self, uint32_t start_block, mp_buffer_info_t *bufinfo) {
+mp_negative_errno_t common_hal_sdioio_sdcard_writeblocks(sdioio_sdcard_obj_t *self, uint32_t start_block, mp_buffer_info_t *bufinfo) {
     check_for_deinit(self);
     check_whole_block(bufinfo);
 
@@ -272,7 +272,7 @@ mp_errno_t common_hal_sdioio_sdcard_writeblocks(sdioio_sdcard_obj_t *self, uint3
 }
 
 // Native function for VFS blockdev layer
-mp_errno_t sdioio_sdcard_readblocks(mp_obj_t self_in, uint8_t *buf,
+mp_negative_errno_t sdioio_sdcard_readblocks(mp_obj_t self_in, uint8_t *buf,
     uint32_t start_block, uint32_t num_blocks) {
     sdioio_sdcard_obj_t *self = MP_OBJ_TO_PTR(self_in);
     wait_write_complete(self);
@@ -291,7 +291,7 @@ mp_errno_t sdioio_sdcard_readblocks(mp_obj_t self_in, uint8_t *buf,
     return 0;
 }
 
-mp_errno_t common_hal_sdioio_sdcard_readblocks(sdioio_sdcard_obj_t *self, uint32_t start_block, mp_buffer_info_t *bufinfo) {
+mp_negative_errno_t common_hal_sdioio_sdcard_readblocks(sdioio_sdcard_obj_t *self, uint32_t start_block, mp_buffer_info_t *bufinfo) {
     check_for_deinit(self);
     check_whole_block(bufinfo);
 

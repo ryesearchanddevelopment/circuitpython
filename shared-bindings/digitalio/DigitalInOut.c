@@ -368,13 +368,13 @@ digitalio_direction_t digitalinout_get_direction(mp_obj_t self_in) {
     return common_hal_digitalio_digitalinout_get_direction(self);
 }
 
-mp_errno_t digitalinout_set_value(mp_obj_t self_in, bool value) {
+mp_negative_errno_t digitalinout_set_value(mp_obj_t self_in, bool value) {
     digitalio_digitalinout_obj_t *self = MP_OBJ_TO_PTR(self_in);
     common_hal_digitalio_digitalinout_set_value(self, value);
     return 0;
 }
 
-mp_errno_t digitalinout_get_value(mp_obj_t self_in, bool *value) {
+mp_negative_errno_t digitalinout_get_value(mp_obj_t self_in, bool *value) {
     digitalio_digitalinout_obj_t *self = MP_OBJ_TO_PTR(self_in);
     *value = common_hal_digitalio_digitalinout_get_value(self);
     return 0;

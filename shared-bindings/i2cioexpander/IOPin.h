@@ -11,7 +11,7 @@
 
 extern const mp_obj_type_t i2cioexpander_iopin_type;
 
-mp_errno_t i2cioexpander_iopin_construct(
+mp_negative_errno_t i2cioexpander_iopin_construct(
     i2cioexpander_iopin_obj_t *self,
     i2cioexpander_ioexpander_obj_t *expander,
     uint8_t pin_number);
@@ -30,8 +30,8 @@ digitalinout_result_t common_hal_i2cioexpander_iopin_switch_to_output(
 
 digitalio_direction_t common_hal_i2cioexpander_iopin_get_direction(i2cioexpander_iopin_obj_t *self);
 
-mp_errno_t common_hal_i2cioexpander_iopin_set_value(i2cioexpander_iopin_obj_t *self, bool value);
-mp_errno_t common_hal_i2cioexpander_iopin_get_value(i2cioexpander_iopin_obj_t *self, bool *value);
+mp_negative_errno_t common_hal_i2cioexpander_iopin_set_value(i2cioexpander_iopin_obj_t *self, bool value);
+mp_negative_errno_t common_hal_i2cioexpander_iopin_get_value(i2cioexpander_iopin_obj_t *self, bool *value);
 
 digitalinout_result_t common_hal_i2cioexpander_iopin_set_drive_mode(
     i2cioexpander_iopin_obj_t *self,

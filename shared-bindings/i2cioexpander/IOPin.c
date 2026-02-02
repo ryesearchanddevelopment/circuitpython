@@ -134,7 +134,7 @@ static mp_obj_t i2cioexpander_iopin_obj_get_value(mp_obj_t self_in) {
     i2cioexpander_iopin_obj_t *self = MP_OBJ_TO_PTR(self_in);
     check_for_deinit(self);
     bool value;
-    mp_errno_t res = common_hal_i2cioexpander_iopin_get_value(self, &value);
+    mp_negative_errno_t res = common_hal_i2cioexpander_iopin_get_value(self, &value);
     if (res != 0) {
         mp_raise_OSError(-res);
     }
@@ -149,7 +149,7 @@ static mp_obj_t i2cioexpander_iopin_obj_set_value(mp_obj_t self_in, mp_obj_t val
         mp_raise_AttributeError(MP_ERROR_TEXT("Cannot set value when direction is input."));
         return mp_const_none;
     }
-    mp_errno_t res = common_hal_i2cioexpander_iopin_set_value(self, mp_obj_is_true(value));
+    mp_negative_errno_t res = common_hal_i2cioexpander_iopin_set_value(self, mp_obj_is_true(value));
     if (res != 0) {
         mp_raise_OSError(-res);
     }
@@ -259,12 +259,12 @@ static digitalio_direction_t iopin_protocol_get_direction(mp_obj_t self_in) {
     return common_hal_i2cioexpander_iopin_get_direction(self);
 }
 
-static mp_errno_t iopin_protocol_get_value(mp_obj_t self_in, bool *value) {
+static mp_negative_errno_t iopin_protocol_get_value(mp_obj_t self_in, bool *value) {
     i2cioexpander_iopin_obj_t *self = MP_OBJ_TO_PTR(self_in);
     return common_hal_i2cioexpander_iopin_get_value(self, value);
 }
 
-static mp_errno_t iopin_protocol_set_value(mp_obj_t self_in, bool value) {
+static mp_negative_errno_t iopin_protocol_set_value(mp_obj_t self_in, bool value) {
     i2cioexpander_iopin_obj_t *self = MP_OBJ_TO_PTR(self_in);
     return common_hal_i2cioexpander_iopin_set_value(self, value);
 }

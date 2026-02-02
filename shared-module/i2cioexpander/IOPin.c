@@ -9,7 +9,7 @@
 
 #include "py/runtime.h"
 
-mp_errno_t i2cioexpander_iopin_construct(
+mp_negative_errno_t i2cioexpander_iopin_construct(
     i2cioexpander_iopin_obj_t *self,
     i2cioexpander_ioexpander_obj_t *expander,
     uint8_t pin_number) {
@@ -88,7 +88,7 @@ digitalio_direction_t common_hal_i2cioexpander_iopin_get_direction(i2cioexpander
     return self->direction;
 }
 
-mp_errno_t common_hal_i2cioexpander_iopin_set_value(i2cioexpander_iopin_obj_t *self, bool value) {
+mp_negative_errno_t common_hal_i2cioexpander_iopin_set_value(i2cioexpander_iopin_obj_t *self, bool value) {
     size_t current_value;
     common_hal_i2cioexpander_ioexpander_get_output_value(self->expander, &current_value);
     size_t new_value;
@@ -103,9 +103,9 @@ mp_errno_t common_hal_i2cioexpander_iopin_set_value(i2cioexpander_iopin_obj_t *s
     return 0;
 }
 
-mp_errno_t common_hal_i2cioexpander_iopin_get_value(i2cioexpander_iopin_obj_t *self, bool *value) {
+mp_negative_errno_t common_hal_i2cioexpander_iopin_get_value(i2cioexpander_iopin_obj_t *self, bool *value) {
     size_t full_value;
-    mp_errno_t result = common_hal_i2cioexpander_ioexpander_get_input_value(self->expander, &full_value);
+    mp_negative_errno_t result = common_hal_i2cioexpander_ioexpander_get_input_value(self->expander, &full_value);
     if (result != 0) {
         return result;
     }

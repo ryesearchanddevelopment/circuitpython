@@ -25,8 +25,8 @@ typedef struct _digitalinout_p_t {
     digitalinout_result_t (*switch_to_input)(mp_obj_t self, digitalio_pull_t pull);
     digitalinout_result_t (*switch_to_output)(mp_obj_t self, bool value, digitalio_drive_mode_t drive_mode);
     digitalio_direction_t (*get_direction)(mp_obj_t self);
-    mp_errno_t (*set_value)(mp_obj_t self, bool value); // Return 0 if ok
-    mp_errno_t (*get_value)(mp_obj_t self, bool *value); // Return 0 if ok
+    mp_negative_errno_t (*set_value)(mp_obj_t self, bool value); // Return 0 if ok
+    mp_negative_errno_t (*get_value)(mp_obj_t self, bool *value); // Return 0 if ok
     digitalinout_result_t (*set_drive_mode)(mp_obj_t self, digitalio_drive_mode_t drive_mode);
     digitalio_drive_mode_t (*get_drive_mode)(mp_obj_t self);
     digitalinout_result_t (*set_pull)(mp_obj_t self, digitalio_pull_t pull);
@@ -61,8 +61,8 @@ bool digitalinout_protocol_deinited(mp_obj_t self);
 digitalinout_result_t digitalinout_protocol_switch_to_input(mp_obj_t self, digitalio_pull_t pull);
 digitalinout_result_t digitalinout_protocol_switch_to_output(mp_obj_t self, bool value, digitalio_drive_mode_t drive_mode);
 digitalio_direction_t digitalinout_protocol_get_direction(mp_obj_t self);
-mp_errno_t digitalinout_protocol_set_value(mp_obj_t self, bool value);
-mp_errno_t digitalinout_protocol_get_value(mp_obj_t self, bool *value);
+mp_negative_errno_t digitalinout_protocol_set_value(mp_obj_t self, bool value);
+mp_negative_errno_t digitalinout_protocol_get_value(mp_obj_t self, bool *value);
 digitalinout_result_t digitalinout_protocol_set_drive_mode(mp_obj_t self, digitalio_drive_mode_t drive_mode);
 digitalio_drive_mode_t digitalinout_protocol_get_drive_mode(mp_obj_t self);
 digitalinout_result_t digitalinout_protocol_set_pull(mp_obj_t self, digitalio_pull_t pull);
