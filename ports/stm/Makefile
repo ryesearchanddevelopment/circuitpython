@@ -214,7 +214,10 @@ endif
 
 SRC_S_UPPER = supervisor/shared/cpu_regs.S
 SRC_S = \
+	shared/runtime/gchelper_thumb2.s \
 	st_driver/cmsis_device_$(MCU_SERIES_LOWER)/Source/Templates/gcc/startup_$(MCU_VARIANT_LOWER).s
+
+SRC_C += shared/runtime/gchelper_native.c
 
 ifneq ($(FROZEN_MPY_DIR),)
 FROZEN_MPY_PY_FILES := $(shell find -L $(FROZEN_MPY_DIR) -type f -name '*.py')

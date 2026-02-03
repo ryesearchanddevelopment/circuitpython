@@ -90,7 +90,9 @@ ifneq (,$(wildcard boards/$(BOARD)/sensor.c))
 SRC_C += boards/$(BOARD)/sensor.c
 endif
 
-SRC_S = boards/mp_efr32xg24_gchelper.s
+SRC_S = shared/runtime/gchelper_thumb2.s
+
+SRC_C += shared/runtime/gchelper_native.c
 
 OBJ += $(PY_O) $(SUPERVISOR_O) $(addprefix $(BUILD)/, $(SRC_C:.c=.o))
 OBJ += $(addprefix $(BUILD)/, $(SRC_COMMON_HAL_SHARED_MODULE_EXPANDED:.c=.o))

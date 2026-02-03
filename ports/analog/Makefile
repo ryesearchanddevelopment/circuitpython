@@ -156,6 +156,9 @@ endif
 
 SRC_S_UPPER = supervisor/shared/cpu_regs.S
 SRC_S += $(STARTUPFILE)
+SRC_S += shared/runtime/gchelper_thumb2.s
+
+SRC_C += shared/runtime/gchelper_native.c
 
 # Needed to compile some MAX32 headers
 CFLAGS += 	-D$(MCU_VARIANT_UPPER) \

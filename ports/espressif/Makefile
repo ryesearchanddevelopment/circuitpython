@@ -216,9 +216,12 @@ ifeq ($(IDF_TARGET_ARCH),xtensa)
 # `#include "xtensa/xtensa_api.h"`.
 
 	CFLAGS += -mlongcalls -isystem esp-idf/components/xtensa/deprecated_include/ -Wno-error=cpp
+	CFLAGS += -DMICROPY_GCREGS_SETJMP=1
 
 # Wrap longjmp with a patched version that protects register window update with a critical section
 	LDFLAGS += -Wl,--wrap=longjmp
+
+	SRC_C += shared/runtime/gchelper_generic.c
 else ifeq ($(IDF_TARGET_ARCH),riscv)
 
 	ifeq ($(IDF_TARGET),esp32p4)
@@ -230,6 +233,9 @@ else ifeq ($(IDF_TARGET_ARCH),riscv)
 	LDFLAGS += \
 		-Lesp-idf/components/riscv/ld \
 		-Trom.api.ld
+
+	SRC_C += shared/runtime/gchelper_native.c
+	SRC_S = shared/runtime/gchelper_rv32i.s
 endif
 
 
@@ -594,6 +600,7 @@ OBJ += $(addprefix $(BUILD)/, $(SRC_LIBM:.c=.o))
 endif
 OBJ += $(addprefix $(BUILD)/, $(SRC_CIRCUITPY_COMMON:.c=.o))
 OBJ += $(addprefix $(BUILD)/, $(SRC_MOD:.c=.o))
+OBJ += $(addprefix $(BUILD)/, $(SRC_S:.s=.o))
 OBJ += $(addprefix $(BUILD)/, $(SRC_S_UPPER:.S=.o))
 
 $(BUILD)/$(FATFS_DIR)/ff.o: COPT += -Os

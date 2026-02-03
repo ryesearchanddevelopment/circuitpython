@@ -46,6 +46,9 @@ SRC_C += \
 	mphalport.c \
 
 SRC_S_UPPER = supervisor/shared/cpu_regs.S
+SRC_S = shared/runtime/gchelper_thumb1.s
+
+SRC_C += shared/runtime/gchelper_native.c
 
 OBJ = $(PY_O) $(SUPERVISOR_O) $(addprefix $(BUILD)/, $(SRC_C:.c=.o))
 OBJ += $(addprefix $(BUILD)/, $(SRC_COMMON_HAL_SHARED_MODULE_EXPANDED:.c=.o))

@@ -147,6 +147,9 @@ $(patsubst %.c,$(BUILD)/%.o,$(SRC_DCD)): CFLAGS += -Wno-missing-prototypes
 endif # CIRCUITPY_USB_DEVICE
 
 SRC_S_UPPER = supervisor/shared/cpu_regs.S
+SRC_S = shared/runtime/gchelper_thumb2.s
+
+SRC_C += shared/runtime/gchelper_native.c
 
 OBJ += $(PY_O) $(SUPERVISOR_O) $(addprefix $(BUILD)/, $(SRC_C:.c=.o))
 OBJ += $(addprefix $(BUILD)/, $(SRC_NRFX:.c=.o))
@@ -155,6 +158,7 @@ ifeq ($(INTERNAL_LIBM),1)
 OBJ += $(addprefix $(BUILD)/, $(SRC_LIBM:.c=.o))
 endif
 OBJ += $(addprefix $(BUILD)/, $(SRC_CIRCUITPY_COMMON:.c=.o))
+OBJ += $(addprefix $(BUILD)/, $(SRC_S:.s=.o))
 OBJ += $(addprefix $(BUILD)/, $(SRC_S_UPPER:.S=.o))
 OBJ += $(addprefix $(BUILD)/, $(SRC_MOD:.c=.o))
 

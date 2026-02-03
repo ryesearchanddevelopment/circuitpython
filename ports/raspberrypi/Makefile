@@ -422,6 +422,8 @@ SRC_S_UPPER_CHIP_VARIANT := \
 	sdk/src/rp2_common/pico_float/float_aeabi_rp2040.S \
 	sdk/src/rp2_common/pico_mem_ops/mem_ops_aeabi.S \
 
+SRC_S = shared/runtime/gchelper_thumb1.s
+
 PICO_LDFLAGS += \
 	$(PICO_WRAP_FLOAT_AEABI_FLAGS) \
 	$(PICO_WRAP_FLOAT_SCI_FLAGS) \
@@ -461,6 +463,8 @@ SRC_S_UPPER_CHIP_VARIANT := \
 	sdk/src/rp2_common/pico_float/float_sci_m33_vfp.S \
 	sdk/src/rp2_common/pico_float/float_common_m33.S \
 
+SRC_S = shared/runtime/gchelper_thumb2.s
+
 PICO_LDFLAGS += $(PICO_WRAP_FLOAT_SCI_FLAGS) $(PICO_WRAP_DOUBLE_FLAGS)
 
 ifeq ($(CHIP_PACKAGE),A)
@@ -473,6 +477,7 @@ endif
 
 endif
 
+SRC_C += shared/runtime/gchelper_native.c
 
 SRC_SDK := \
 	src/common/hardware_claim/claim.c \
