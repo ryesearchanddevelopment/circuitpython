@@ -18,7 +18,9 @@
 #include "supervisor/shared/translate/translate.h"
 #include "supervisor/shared/tick.h"
 
+#if __ZEPHYR__
 #include <zephyr/kernel.h>
+#endif
 
 #define SAFE_MODE_DATA_GUARD 0xad0000af
 #define SAFE_MODE_DATA_GUARD_MASK 0xff0000ff
