@@ -18,7 +18,7 @@
 #include "supervisor/shared/translate/translate.h"
 #include "supervisor/shared/tick.h"
 
-#if __ZEPHYR__
+#ifdef __ZEPHYR__
 #include <zephyr/kernel.h>
 #endif
 
@@ -104,7 +104,7 @@ void PLACE_IN_ITCM(safe_mode_on_next_reset)(safe_mode_t reason) {
 // Don't inline this so it's easy to break on it from GDB.
 void __attribute__((noinline, )) PLACE_IN_ITCM(reset_into_safe_mode)(safe_mode_t reason) {
     if (_safe_mode > SAFE_MODE_BROWNOUT && reason > SAFE_MODE_BROWNOUT) {
-        #if __ZEPHYR__
+        #ifdef __ZEPHYR__
         printk("Already in safe mode\n");
         printk("Reason: %d\n", reason);
         printk("Current safe mode: %d\n", _safe_mode);
