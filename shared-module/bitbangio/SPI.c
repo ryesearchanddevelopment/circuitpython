@@ -23,19 +23,22 @@
 void shared_module_bitbangio_spi_construct(bitbangio_spi_obj_t *self,
     mp_obj_t clock, mp_obj_t mosi, mp_obj_t miso) {
 
+    // Allocate the pins in the same place as self.
+    bool use_port_allocation = !gc_alloc_possible() || !gc_ptr_on_heap(self);
+
     // Convert clock from Pin to DigitalInOutProtocol
-    self->clock = digitalinout_protocol_from_pin(clock, MP_QSTR_clock, false, false, &self->own_clock);
+    self->clock = digitalinout_protocol_from_pin(clock, MP_QSTR_clock, false, use_port_allocation, &self->own_clock);
     digitalinout_protocol_switch_to_output(self->clock, self->polarity == 1, DRIVE_MODE_PUSH_PULL);
 
     // Convert mosi from Pin to DigitalInOutProtocol (optional)
-    self->mosi = digitalinout_protocol_from_pin(mosi, MP_QSTR_mosi, true, false, &self->own_mosi);
+    self->mosi = digitalinout_protocol_from_pin(mosi, MP_QSTR_mosi, true, use_port_allocation, &self->own_mosi);
     self->has_mosi = (self->mosi != mp_const_none);
     if (self->has_mosi) {
         digitalinout_protocol_switch_to_output(self->mosi, false, DRIVE_MODE_PUSH_PULL);
     }
 
     // Convert miso from Pin to DigitalInOutProtocol (optional)
-    self->miso = digitalinout_protocol_from_pin(miso, MP_QSTR_miso, true, false, &self->own_miso);
+    self->miso = digitalinout_protocol_from_pin(miso, MP_QSTR_miso, true, use_port_allocation, &self->own_miso);
     self->has_miso = (self->miso != mp_const_none);
     // MISO starts out as input by default, no need to change
 

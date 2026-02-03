@@ -167,11 +167,14 @@ void shared_module_bitbangio_i2c_construct(bitbangio_i2c_obj_t *self,
         self->us_delay = 1;
     }
 
+    // Allocate the pins in the same place as self.
+    bool use_port_allocation = !gc_alloc_possible() || !gc_ptr_on_heap(self);
+
     // Convert scl from Pin to DigitalInOutProtocol
-    self->scl = digitalinout_protocol_from_pin(scl, MP_QSTR_scl, false, false, &self->own_scl);
+    self->scl = digitalinout_protocol_from_pin(scl, MP_QSTR_scl, false, use_port_allocation, &self->own_scl);
 
     // Convert sda from Pin to DigitalInOutProtocol
-    self->sda = digitalinout_protocol_from_pin(sda, MP_QSTR_sda, false, false, &self->own_sda);
+    self->sda = digitalinout_protocol_from_pin(sda, MP_QSTR_sda, false, use_port_allocation, &self->own_sda);
 
     digitalinout_protocol_switch_to_output(self->scl, true, DRIVE_MODE_OPEN_DRAIN);
     digitalinout_protocol_switch_to_output(self->sda, true, DRIVE_MODE_OPEN_DRAIN);
