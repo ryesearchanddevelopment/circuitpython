@@ -86,6 +86,11 @@ jobs:
           python-version: 3.13
       - name: Set up Zephyr
         uses: ./.github/actions/deps/ports/zephyr-cp
+      - name: Set up submodules
+        id: set-up-submodules
+        uses: ./.github/actions/deps/submodules
+        with:
+          target: zephyr-cp
       - name: Set up external
         uses: ./.github/actions/deps/external
       - name: Build native sim target
