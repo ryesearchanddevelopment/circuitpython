@@ -37,4 +37,6 @@ CIRCUITPY_ZLIB = 0
 
 CIRCUITPY_STAGE = 1
 
+CIRCUITPY_DIGITALINOUT_PROTOCOL = 0
+
 FROZEN_MPY_DIRS += $(TOP)/frozen/circuitpython-stage/meowbit
