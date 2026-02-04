@@ -552,8 +552,6 @@ async def build_circuitpython():
     source_files.append(portdir / "common-hal/zephyr_kernel/__init__.c")
     # source_files.append(srcdir / "ports" / port / "peripherals" / "nrf" / "nrf52840" / "pins.c")
 
-    assembly_files.append(srcdir / "supervisor/shared/cpu_regs.S")
-
     source_files.extend(assembly_files)
 
     objects = []

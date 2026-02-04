@@ -31,7 +31,6 @@
 #include "supervisor/cpu.h"
 #include "supervisor/filesystem.h"
 #include "supervisor/port.h"
-#include "supervisor/shared/cpu_regs.h"
 #include "supervisor/shared/reload.h"
 #include "supervisor/shared/safe_mode.h"
 #include "supervisor/shared/serial.h"

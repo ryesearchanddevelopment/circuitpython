@@ -162,8 +162,7 @@ SRC_C += \
 endif
 
 SRC_S_UPPER = \
-    sdk/devices/$(CHIP_FAMILY)/gcc/startup_$(CHIP_CORE).S \
-    supervisor/shared/cpu_regs.S
+    sdk/devices/$(CHIP_FAMILY)/gcc/startup_$(CHIP_CORE).S
 
 SRC_S = shared/runtime/gchelper_thumb2.s
 

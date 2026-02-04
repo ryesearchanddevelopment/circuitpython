@@ -78,8 +78,7 @@ SRC_C += lib/tinyusb/src/portable/valentyusb/eptri/dcd_eptri.c
 endif
 
 SRC_S_UPPER = \
-	crt0-vexriscv.S \
-	supervisor/shared/cpu_regs.S
+	crt0-vexriscv.S
 
 SRC_S = shared/runtime/gchelper_rv32i.s
 
