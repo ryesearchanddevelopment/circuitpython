@@ -90,7 +90,8 @@ ifneq (,$(wildcard boards/$(BOARD)/sensor.c))
 SRC_C += boards/$(BOARD)/sensor.c
 endif
 
-SRC_S = shared/runtime/gchelper_thumb2.s
+AFLAGS = -mcpu=cortex-m33 -mthumb -mfpu=fpv5-sp-d16 -mfloat-abi=hard
+SRC_S = shared/runtime/gchelper_thumb1.s
 
 SRC_C += shared/runtime/gchelper_native.c
 

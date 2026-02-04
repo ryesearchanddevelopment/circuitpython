@@ -396,6 +396,8 @@ OTHER_PICO_FLAGS := \
 	-Wl,--wrap=__aeabi_uidivmod \
 	-Wl,--wrap=__aeabi_uldivmod
 
+SRC_S = shared/runtime/gchelper_thumb1.s
+
 ifeq ($(CHIP_VARIANT),RP2040)
 CFLAGS += \
 	-march=armv6-m \
@@ -422,8 +424,6 @@ SRC_S_UPPER_CHIP_VARIANT := \
 	sdk/src/rp2_common/pico_float/float_aeabi_rp2040.S \
 	sdk/src/rp2_common/pico_mem_ops/mem_ops_aeabi.S \
 
-SRC_S = shared/runtime/gchelper_thumb1.s
-
 PICO_LDFLAGS += \
 	$(PICO_WRAP_FLOAT_AEABI_FLAGS) \
 	$(PICO_WRAP_FLOAT_SCI_FLAGS) \
@@ -436,12 +436,12 @@ UF2_ID = 0xE48BFF56
 DOUBLE_EABI = rp2040
 endif
 ifeq ($(CHIP_VARIANT),RP2350)
-CFLAGS += \
-	-march=armv8-m.main+fp+dsp \
+AFLAGS = -march=armv8-m.main+fp+dsp \
 	-mthumb \
-	-mabi=aapcs-linux \
 	-mcpu=cortex-m33 \
 	-mfloat-abi=softfp
+CFLAGS += $(AFLAGS) \
+	-mabi=aapcs-linux
 
 # ARM Secure family id
 UF2_ID = 0xe48bff59
@@ -462,8 +462,6 @@ SRC_S_UPPER_CHIP_VARIANT := \
 	sdk/src/rp2_common/pico_double/double_sci_m33.S \
 	sdk/src/rp2_common/pico_float/float_sci_m33_vfp.S \
 	sdk/src/rp2_common/pico_float/float_common_m33.S \
-
-SRC_S = shared/runtime/gchelper_thumb2.s
 
 PICO_LDFLAGS += $(PICO_WRAP_FLOAT_SCI_FLAGS) $(PICO_WRAP_DOUBLE_FLAGS)
 
