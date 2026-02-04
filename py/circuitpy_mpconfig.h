@@ -317,10 +317,17 @@ typedef long mp_off_t;
 
 // Default board buses.
 
+#ifndef CIRCUITPY_MUTABLE_BOARD
+#define CIRCUITPY_MUTABLE_BOARD (0)
+#endif
+
 #ifndef CIRCUITPY_BOARD_I2C
 #if defined(DEFAULT_I2C_BUS_SCL) && defined(DEFAULT_I2C_BUS_SDA)
 #define CIRCUITPY_BOARD_I2C     (1)
 #define CIRCUITPY_BOARD_I2C_PIN {{.scl = DEFAULT_I2C_BUS_SCL, .sda = DEFAULT_I2C_BUS_SDA}}
+#ifndef CIRCUITPY_BOARD_I2C_SPEED
+#define CIRCUITPY_BOARD_I2C_SPEED (100000)
+#endif
 #else
 #define CIRCUITPY_BOARD_I2C     (0)
 #endif
