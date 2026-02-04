@@ -43,7 +43,7 @@ void common_hal_audiobusio_pdmin_construct(audiobusio_pdmin_obj_t *self,
     // Use the state machine to manage pins.
     common_hal_rp2pio_statemachine_construct(&self->state_machine,
         pdmin, MP_ARRAY_SIZE(pdmin),
-        sample_rate * 32 * 2, // Frequency based on sample rate
+        sample_rate * OVERSAMPLING * 2, // Frequency based on sample rate
         NULL, 0,
         NULL, 0, // may_exec
         NULL, 1, PIO_PINMASK32_NONE, PIO_PINMASK32_ALL, // out pin
