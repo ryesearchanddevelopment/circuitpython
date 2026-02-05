@@ -284,6 +284,7 @@ SRC_C += \
 	lib/tinyusb/src/portable/microchip/samd/dcd_samd.c \
 	mphalport.c \
 	reset.c \
+	shared/runtime/gchelper_native.c \
 	timer_handler.c \
 	$(SRC_PERIPHERALS) \
 
@@ -308,7 +309,11 @@ ifeq ($(CIRCUITPY_AUDIOBUSIO),1)
 SRC_C += peripherals/samd/i2s.c peripherals/samd/$(PERIPHERALS_CHIP_FAMILY)/i2s.c
 endif
 
-SRC_S_UPPER = supervisor/shared/cpu_regs.S
+ifeq ($(CHIP_FAMILY), samd21)
+SRC_S += shared/runtime/gchelper_thumb1.s
+else
+SRC_S += shared/runtime/gchelper_thumb2.s
+endif
 
 OBJ = $(PY_O) $(SUPERVISOR_O) $(addprefix $(BUILD)/, $(SRC_C:.c=.o))
 OBJ += $(addprefix $(BUILD)/, $(SRC_ASF:.c=.o))
@@ -317,7 +322,7 @@ ifeq ($(INTERNAL_LIBM),1)
 OBJ += $(addprefix $(BUILD)/, $(SRC_LIBM:.c=.o))
 endif
 OBJ += $(addprefix $(BUILD)/, $(SRC_CIRCUITPY_COMMON:.c=.o))
-OBJ += $(addprefix $(BUILD)/, $(SRC_S_UPPER:.S=.o))
+OBJ += $(addprefix $(BUILD)/, $(SRC_S:.s=.o))
 OBJ += $(addprefix $(BUILD)/, $(SRC_MOD:.c=.o))
 
 QSTR_GLOBAL_REQUIREMENTS += $(HEADER_BUILD)/sdiodata.h

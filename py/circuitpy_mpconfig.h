@@ -46,6 +46,10 @@ extern void common_hal_mcu_enable_interrupts(void);
 #define MICROPY_VFS_LFS1                 (0)
 #define MICROPY_VFS_LFS2                 (0)
 
+#ifndef MICROPY_GCREGS_SETJMP
+#define MICROPY_GCREGS_SETJMP            (0)
+#endif
+
 // Sorted alphabetically for easy finding.
 //
 // default is 128; consider raising to reduce fragmentation.
