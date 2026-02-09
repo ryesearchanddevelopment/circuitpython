@@ -313,7 +313,11 @@ static void _refresh_display(busdisplay_busdisplay_obj_t *self) {
         // A refresh on this bus is already in progress.  Try next display.
         return;
     }
-    displayio_display_core_start_refresh(&self->core);
+    if (!displayio_display_core_start_refresh(&self->core)) {
+        // Refresh for this display already in progress.
+        return;
+    }
+
     const displayio_area_t *current_area = _get_refresh_areas(self);
     while (current_area != NULL) {
         _refresh_area(self, current_area);
