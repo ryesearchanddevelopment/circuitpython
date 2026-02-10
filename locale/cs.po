@@ -1679,10 +1679,6 @@ msgstr "Nepřipojený"
 msgid "Not playing"
 msgstr "Nehraje"
 
-#: shared-module/jpegio/JpegDecoder.c
-msgid "Not supported JPEG standard"
-msgstr ""
-
 #: ports/espressif/common-hal/paralleldisplaybus/ParallelBus.c
 #: ports/espressif/common-hal/sdioio/SDCard.c
 #, c-format
@@ -2410,6 +2406,10 @@ msgstr ""
 msgid ""
 "Unspecified issue. Can be that the pairing prompt on the other device was "
 "declined or ignored."
+msgstr ""
+
+#: shared-module/jpegio/JpegDecoder.c
+msgid "Unsupported JPEG (may be progressive)"
 msgstr ""
 
 #: shared-bindings/bitmaptools/__init__.c
