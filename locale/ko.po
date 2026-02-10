@@ -1719,11 +1719,6 @@ msgstr "연결되지 않았습니다"
 msgid "Not playing"
 msgstr "재생되지 않았습니다"
 
-#: shared-module/jpegio/JpegDecoder.c
-#, fuzzy
-msgid "Not supported JPEG standard"
-msgstr "지원되지 않는 JPEG 표준"
-
 #: ports/espressif/common-hal/paralleldisplaybus/ParallelBus.c
 #: ports/espressif/common-hal/sdioio/SDCard.c
 #, c-format
@@ -2463,6 +2458,10 @@ msgstr ""
 msgid ""
 "Unspecified issue. Can be that the pairing prompt on the other device was "
 "declined or ignored."
+msgstr ""
+
+#: shared-module/jpegio/JpegDecoder.c
+msgid "Unsupported JPEG (may be progressive)"
 msgstr ""
 
 #: shared-bindings/bitmaptools/__init__.c
@@ -4662,6 +4661,10 @@ msgstr ""
 #: extmod/ulab/code/scipy/signal/signal.c
 msgid "zi must be of shape (n_section, 2)"
 msgstr ""
+
+#, fuzzy
+#~ msgid "Not supported JPEG standard"
+#~ msgstr "지원되지 않는 JPEG 표준"
 
 #, fuzzy
 #~ msgid "%q moved from %q to %q"

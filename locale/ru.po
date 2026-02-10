@@ -1702,10 +1702,6 @@ msgstr "Не подключено"
 msgid "Not playing"
 msgstr "Не воспроизводится (Not playing)"
 
-#: shared-module/jpegio/JpegDecoder.c
-msgid "Not supported JPEG standard"
-msgstr "Не поддерживается Стандарт JPEG"
-
 #: ports/espressif/common-hal/paralleldisplaybus/ParallelBus.c
 #: ports/espressif/common-hal/sdioio/SDCard.c
 #, c-format
@@ -2448,6 +2444,10 @@ msgid ""
 msgstr ""
 "Неуказанная проблема. Возможно, запрос на сопряжение на другом устройстве "
 "был отклонен или проигнорирован."
+
+#: shared-module/jpegio/JpegDecoder.c
+msgid "Unsupported JPEG (may be progressive)"
+msgstr ""
 
 #: shared-bindings/bitmaptools/__init__.c
 msgid "Unsupported colorspace"
@@ -4680,6 +4680,9 @@ msgstr "zi должно быть типа float"
 #: extmod/ulab/code/scipy/signal/signal.c
 msgid "zi must be of shape (n_section, 2)"
 msgstr "zi должен иметь форму (n_section, 2)"
+
+#~ msgid "Not supported JPEG standard"
+#~ msgstr "Не поддерживается Стандарт JPEG"
 
 #~ msgid "%q moved from %q to %q"
 #~ msgstr "%q переместился из %q в %q"
