@@ -1,5 +1,5 @@
-USB_VID = 0x1D6B
-USB_PID = 0x0003
+USB_VID = 0x1209
+USB_PID = 0x3501
 USB_PRODUCT = "Thumby Color"
 USB_MANUFACTURER = "TinyCircuits"
 
