@@ -45,7 +45,7 @@ endif
 
 # user-specific settings that mpconfigport does not override
 # (i.e. mpconfigport.mk uses "foo ?= bar")
--include mpconfiguser1.mk
+-include user_pre_mpconfigport.mk
 
 # Port-specific
 include mpconfigport.mk
@@ -58,7 +58,7 @@ endif
 
 # user-specific overrides of hard-coded settings
 # (i.e. xxx.mk uses "foo = bar")
--include mpconfiguser2.mk
+-include user_post_mpconfigport.mk
 
 # qstr definitions (must come before including py.mk)
 QSTR_DEFS = qstrdefsport.h
@@ -72,4 +72,4 @@ include $(TOP)/supervisor/supervisor.mk
 include $(TOP)/py/circuitpy_defns.mk
 
 # user specific
--include user_defns.mk
+-include user_post_circuitpy_defns.mk
