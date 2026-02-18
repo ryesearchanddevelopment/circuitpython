@@ -1,4 +1,6 @@
 manifest:
+  group-filter:
+    - +babblesim
   projects:
     - name: zephyr
       url: https://github.com/adafruit/zephyr
