@@ -4,6 +4,6 @@ manifest:
   projects:
     - name: zephyr
       url: https://github.com/adafruit/zephyr
-      revision: circuitpython-v4.3.0
+      revision: 3c5a3a72daa3ca6462cd8bc9c8c7c6a41fbf3b2e
       clone-depth: 100
       import: true
