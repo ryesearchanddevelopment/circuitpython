@@ -48,18 +48,15 @@ static struct net_mgmt_event_callback ipv4_cb;
 
 static void _event_handler(struct net_mgmt_event_callback *cb, uint64_t mgmt_event, struct net_if *iface) {
     wifi_radio_obj_t *self = &common_hal_wifi_radio_obj;
-    printk("_event_handler cb %p event 0x%" PRIx64 " if %p\n", cb, mgmt_event, iface);
+    (void)iface;
 
     switch (mgmt_event) {
         case NET_EVENT_WIFI_SCAN_RESULT: {
-            printk("NET_EVENT_WIFI_SCAN_RESULT\n");
             #if defined(CONFIG_NET_MGMT_EVENT_INFO)
             const struct wifi_scan_result *result = cb->info;
             if (result != NULL && self->current_scan != NULL) {
                 wifi_scannednetworks_scan_result(self->current_scan, result);
             }
-            #else
-            printk("Scan result info unavailable (CONFIG_NET_MGMT_EVENT_INFO disabled)\n");
             #endif
             break;
         }
@@ -306,9 +303,7 @@ void common_hal_wifi_init(bool user_initiated) {
     }
     snprintf(cpy_default_hostname, sizeof(cpy_default_hostname), "cpy-%s-%02x%02x%02x%02x%02x%02x", CIRCUITPY_BOARD_ID + board_trim, mac->addr[0], mac->addr[1], mac->addr[2], mac->addr[3], mac->addr[4], mac->addr[5]);
 
-    if (net_hostname_set(cpy_default_hostname, strlen(cpy_default_hostname)) != 0) {
-        printk("setting hostname failed\n");
-    }
+    CHECK_ZEPHYR_RESULT(net_hostname_set(cpy_default_hostname, strlen(cpy_default_hostname)));
     #else
     printk("Hostname support disabled in Zephyr config\n");
     #endif

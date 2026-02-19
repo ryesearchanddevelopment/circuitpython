@@ -145,8 +145,10 @@ void port_idle_until_interrupt(void) {
 
 // Zephyr doesn't maintain one multi-heap. So, make our own using TLSF.
 void port_heap_init(void) {
+    // Do a test malloc to determine if Zephyr has an outer heap that may
+    // overlap with a memory region we've identified in ram_bounds. We'll
+    // corrupt each other if we both use it.
     #ifdef CONFIG_COMMON_LIBC_MALLOC
-    // Do a test malloc to determine if Zephyr has an outer heap.
     uint32_t *test_malloc = malloc(32);
     free(test_malloc); // Free right away so we don't forget. We don't actually write it anyway.
     zephyr_malloc_active = test_malloc != NULL;
@@ -156,11 +158,17 @@ void port_heap_init(void) {
         uint32_t *heap_bottom = ram_bounds[2 * i];
         uint32_t *heap_top = ram_bounds[2 * i + 1];
         size_t size = (heap_top - heap_bottom) * sizeof(uint32_t);
+        // The linker script may fill up a region we thought we could use at
+        // build time. (The ram_bounds values are sometimes determined by the
+        // linker.) So, we need to guard against regions that aren't actually
+        // free.
         if (size < 1024) {
             printk("Skipping region because the linker filled it up.\n");
             continue;
         }
         #ifdef CONFIG_COMMON_LIBC_MALLOC
+        // Skip a ram region if our test malloc is within it. We'll use Zephyr's
+        // malloc to share that space with Zephyr.
         if (heap_bottom <= test_malloc && test_malloc < heap_top) {
             zephyr_malloc_top = heap_top;
             zephyr_malloc_bottom = heap_bottom;

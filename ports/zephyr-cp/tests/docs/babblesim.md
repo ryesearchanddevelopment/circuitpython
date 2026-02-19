@@ -28,7 +28,7 @@ export BSIM_OUT_PATH=/path/to/bsim
 ## Build
 
 ```
-CCACHE_TEMPDIR=/tmp/ccache-tmp make -j32 BOARD=native_nrf5340bsim
+CCACHE_TEMPDIR=/tmp/ccache-tmp make -j<n> BOARD=native_nrf5340bsim
 ```
 
 If you do not use ccache, you can omit `CCACHE_TEMPDIR`.

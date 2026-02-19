@@ -1,6 +1,7 @@
 // This file is part of the CircuitPython project: https://circuitpython.org
 //
 // SPDX-FileCopyrightText: Copyright (c) 2018 Dan Halbert for Adafruit Industries
+// SPDX-FileCopyrightText: Copyright (c) 2026 Scott Shawcroft for Adafruit Industries
 //
 // SPDX-License-Identifier: MIT
 
@@ -132,9 +133,8 @@ void common_hal_bleio_adapter_set_enabled(bleio_adapter_obj_t *self, bool enable
     if (enabled) {
         if (!bt_is_ready()) {
             int err = bt_enable(NULL);
-            raise_zephyr_error(err);
             if (err != 0) {
-                return;
+                raise_zephyr_error(err);
             }
         }
         ble_adapter_enabled = true;
