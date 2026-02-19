@@ -588,15 +588,18 @@ def zephyr_dts_to_cp_board(board_id, portdir, builddir, zephyrbuilddir):  # noqa
     if len(all_ioports) > 1:
         a, b = all_ioports[:2]
         i = 0
-        while a[i] == b[i]:
+        max_i = min(len(a), len(b))
+        while i < max_i and a[i] == b[i]:
             i += 1
         shared_prefix = a[:i]
         for ioport in ioports:
             if not ioport.startswith(shared_prefix):
                 shared_prefix = ""
                 break
-    else:
+    elif all_ioports:
         shared_prefix = all_ioports[0]
+    else:
+        shared_prefix = ""
 
     pin_defs = []
     pin_declarations = ["#pragma once"]
