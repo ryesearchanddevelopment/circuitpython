@@ -17,6 +17,15 @@
 #include <zephyr/kernel.h>
 #include <zephyr/sys/reboot.h>
 
+#if defined(CONFIG_ARCH_POSIX)
+#include <limits.h>
+#include <stdlib.h>
+
+#include "cmdline.h"
+#include "posix_board_if.h"
+#include "posix_native_task.h"
+#endif
+
 #include "lib/tlsf/tlsf.h"
 #include <zephyr/device.h>
 
@@ -36,6 +45,32 @@ static void *zephyr_malloc_bottom = NULL;
 static K_EVENT_DEFINE(main_needed);
 
 static struct k_timer tick_timer;
+
+#if defined(CONFIG_ARCH_POSIX)
+// Number of VM runs before exiting.
+// <= 0 means run forever.
+// INT32_MAX means option was not provided.
+static int32_t native_sim_vm_runs = INT32_MAX;
+static uint32_t native_sim_reset_port_count = 0;
+
+static struct args_struct_t native_sim_reset_port_args[] = {
+    {
+        .option = "vm-runs",
+        .name = "count",
+        .type = 'i',
+        .dest = &native_sim_vm_runs,
+        .descript = "Exit native_sim after this many VM runs. "
+            "Example: --vm-runs=2"
+    },
+    ARG_TABLE_ENDMARKER
+};
+
+static void native_sim_register_cmdline_opts(void) {
+    native_add_command_line_opts(native_sim_reset_port_args);
+}
+
+NATIVE_TASK(native_sim_register_cmdline_opts, PRE_BOOT_1, 0);
+#endif
 
 static void _tick_function(struct k_timer *timer_id) {
     supervisor_tick();
@@ -60,6 +95,16 @@ void reset_cpu(void) {
 void reset_port(void) {
     #if CIRCUITPY_BLEIO
     bleio_reset();
+    #endif
+
+    #if defined(CONFIG_ARCH_POSIX)
+    native_sim_reset_port_count++;
+    if (native_sim_vm_runs != INT32_MAX &&
+        native_sim_vm_runs > 0 &&
+        native_sim_reset_port_count >= (uint32_t)(native_sim_vm_runs + 1)) {
+        printk("posix: exiting after %d VM runs\n", native_sim_vm_runs);
+        posix_exit(0);
+    }
     #endif
 }
 

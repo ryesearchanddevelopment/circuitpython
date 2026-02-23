@@ -3,8 +3,6 @@
 
 """BLE name tests for nrf5340bsim."""
 
-import time
-
 import pytest
 
 pytestmark = pytest.mark.circuitpython_board("native_nrf5340bsim")
@@ -22,10 +20,6 @@ print("name", adapter.name)
 @pytest.mark.circuitpy_drive({"code.py": BSIM_NAME_CODE})
 def test_bsim_set_name(bsim_phy, circuitpython):
     """Set the BLE name and read it back on bsim."""
-    start_time = time.time()
-    while time.time() - start_time < 3.0:
-        if "name CPNAME" in circuitpython.serial.all_output:
-            break
-        time.sleep(0.05)
+    circuitpython.wait_until_done()
 
     assert "name CPNAME" in circuitpython.serial.all_output

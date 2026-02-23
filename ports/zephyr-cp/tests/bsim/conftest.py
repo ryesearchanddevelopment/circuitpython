@@ -86,7 +86,7 @@ class ZephyrSampleProcess:
 @pytest.fixture
 def bsim_phy(request, bsim_phy_binary, native_sim_env, sim_id):
     duration_marker = request.node.get_closest_marker("duration")
-    sim_length = float(duration_marker.args[0]) if duration_marker else 20.0
+    duration = float(duration_marker.args[0]) if duration_marker else 20.0
 
     devices = 1
     if "circuitpython2" in request.fixturenames or "zephyr_sample" in request.fixturenames:
@@ -97,12 +97,7 @@ def bsim_phy(request, bsim_phy_binary, native_sim_env, sim_id):
         sample_device_id = int(sample_marker.kwargs.get("device_id", 1))
         devices = max(devices, sample_device_id + 1)
 
-    bsim_marker = request.node.get_closest_marker("bsim")
-    if bsim_marker is not None:
-        devices = int(bsim_marker.kwargs.get("devices", devices))
-        sim_length = float(bsim_marker.kwargs.get("sim_length", sim_length))
-
-    sim_length_us = int(sim_length * 1e6)
+    sim_length_us = int(duration * 1e6)
     cmd = [
         "stdbuf",
         "-oL",
@@ -136,7 +131,7 @@ def bsim_phy(request, bsim_phy_binary, native_sim_env, sim_id):
             raise RuntimeError("bsim PHY exited immediately")
         # Assume bsim is running
 
-    phy = BsimPhyInstance(proc, phy_output, timeout=sim_length)
+    phy = BsimPhyInstance(proc, phy_output, timeout=duration)
     yield phy
     phy.shutdown()
 
@@ -195,7 +190,12 @@ def zephyr_sample(request, bsim_phy, native_sim_env, sim_id):
     if not binary.exists():
         pytest.skip(f"Zephyr sample binary not found: {binary}")
 
-    cmd = [str(binary), f"-s={sim_id}", f"-d={device_id}"]
+    cmd = [
+        str(binary),
+        f"-s={sim_id}",
+        f"-d={device_id}",
+        "-disconnect_on_exit=1",
+    ]
     logger.info("Running: %s", " ".join(cmd))
     proc = subprocess.Popen(
         cmd,

@@ -2,6 +2,10 @@ manifest:
   group-filter:
     - +babblesim
   projects:
+    - name: nrf_hw_models
+      url: https://github.com/tannewt/ext_nRF_hw_models
+      revision: 24de78c485dce1a6048f8ae1c69a8d70c93b8cdd
+      path: modules/bsim_hw_models/nrf_hw_models
     - name: zephyr
       url: https://github.com/adafruit/zephyr
       revision: 3c5a3a72daa3ca6462cd8bc9c8c7c6a41fbf3b2e

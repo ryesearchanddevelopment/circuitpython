@@ -1,6 +1,7 @@
 import serial
 import subprocess
 import threading
+import time
 
 
 class StdSerial:
@@ -24,6 +25,12 @@ class StdSerial:
         if self.stdin is not None:
             self.stdin.close()
         self.stdout.close()
+
+    @property
+    def in_waiting(self):
+        if self.stdout is None:
+            return 0
+        return len(self.stdout.peek())
 
 
 class SerialSaver:
@@ -58,6 +65,13 @@ class SerialSaver:
             with self._cv:
                 self.all_output += text
                 self._cv.notify_all()
+        in_waiting = 0
+        try:
+            in_waiting = self.serial.in_waiting
+        except OSError:
+            pass
+        if in_waiting > 0:
+            self.all_output += self.serial.read().decode("utf-8", errors="replace")
 
     def wait_for(self, text, timeout=10):
         with self._cv:
@@ -79,11 +93,11 @@ class SerialSaver:
             return
 
         self._stop.set()
+        self._reader.join(timeout=1.0)
         try:
             self.serial.close()
         except Exception:
             pass
-        self._reader.join(timeout=1.0)
         self.serial = None
 
     def write(self, text):
@@ -131,6 +145,7 @@ class NativeSimProcess:
         self.debug_serial.close()
 
     def wait_until_done(self):
-        self._proc.wait(timeout=self._timeout)
-        self.serial.close()
-        self.debug_serial.close()
+        start_time = time.monotonic()
+        while self._proc.poll() is None and time.monotonic() - start_time < self._timeout:
+            time.sleep(0.01)
+        self.shutdown()

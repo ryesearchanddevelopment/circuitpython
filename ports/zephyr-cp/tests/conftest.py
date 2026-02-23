@@ -36,7 +36,11 @@ def pytest_configure(config):
     )
     config.addinivalue_line(
         "markers",
-        "bsim(devices=1, sim_length=20.0): configure bsim PHY device count and simulation length",
+        "duration(seconds): native_sim timeout and bsim PHY simulation duration",
+    )
+    config.addinivalue_line(
+        "markers",
+        "code_py_runs(count): stop native_sim after count code.py runs (default: 1)",
     )
 
 
@@ -179,12 +183,31 @@ def circuitpython(request, board, sim_id, native_sim_binary, native_sim_env, tmp
             timeout = 10
         else:
             timeout = marker.args[0]
+
+        runs_marker = request.node.get_closest_marker("code_py_runs")
+        if runs_marker is None:
+            code_py_runs = 1
+        else:
+            code_py_runs = int(runs_marker.args[0])
+
         if "bsim" in board:
             cmd = [str(native_sim_binary), f"--flash_app={flash}"]
-            cmd.extend((f"-s={sim_id}", f"-d={i}", "-uart0_pty", "-uart_pty_wait"))
+            if instance_count > 1:
+                cmd.append("-disconnect_on_exit=1")
+            cmd.extend(
+                (
+                    f"-s={sim_id}",
+                    f"-d={i}",
+                    "-uart0_pty",
+                    "-uart0_pty_wait_for_readers",
+                    "-uart_pty_wait",
+                    f"--vm-runs={code_py_runs + 1}",
+                )
+            )
         else:
             cmd = [str(native_sim_binary), f"--flash={flash}"]
-            cmd.extend(("-no-rt", "-wait_uart", f"-stop_at={timeout}"))
+            # native_sim vm-runs includes the boot VM setup run.
+            cmd.extend(("-no-rt", "-wait_uart", f"--vm-runs={code_py_runs + 1}"))
 
         marker = request.node.get_closest_marker("disable_i2c_devices")
         if marker and len(marker.args) > 0:

@@ -14,16 +14,13 @@ print("bsim ready")
 
 @pytest.mark.circuitpy_drive({"code.py": BSIM_CODE})
 @pytest.mark.circuitpy_drive({"code.py": BSIM_CODE})
+@pytest.mark.duration(3)
 def test_bsim_dual_instance_connect(bsim_phy, circuitpython1, circuitpython2):
     """Run two bsim instances on the same sim id and verify UART output."""
-    print("in the test")
 
-    # Wait for both devices to produce their expected output before
-    # tearing down the simulation.
-    circuitpython1.serial.wait_for("bsim ready")
-    circuitpython2.serial.wait_for("bsim ready")
-
-    bsim_phy.finish_sim()
+    # Wait for both devices to complete before checking output.
+    circuitpython1.wait_until_done()
+    circuitpython2.wait_until_done()
 
     output0 = circuitpython1.serial.all_output
     output1 = circuitpython2.serial.all_output

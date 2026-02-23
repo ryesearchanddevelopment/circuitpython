@@ -3,8 +3,6 @@
 
 """BLE scanning tests for nrf5340bsim."""
 
-import time
-
 import pytest
 
 pytestmark = pytest.mark.circuitpython_board("native_nrf5340bsim")
@@ -32,16 +30,8 @@ import time
 adapter = _bleio.adapter
 
 print("scan run start")
-for _ in range(10):
-    try:
-        scan = adapter.start_scan(timeout=4.0, active=True)
-        break
-    except OSError:
-        time.sleep(0.1)
-else:
-    raise RuntimeError("scan start failed")
 found = False
-for entry in scan:
+for entry in adapter.start_scan(active=True):
     if b"zephyrproject" in entry.advertisement_bytes:
         print("found beacon run")
         found = True
@@ -57,16 +47,8 @@ import time
 adapter = _bleio.adapter
 
 print("scan run start")
-for _ in range(10):
-    try:
-        scan = adapter.start_scan(timeout=4.0, active=True)
-        break
-    except OSError:
-        time.sleep(0.1)
-else:
-    raise RuntimeError("scan start failed")
 found = False
-for entry in scan:
+for entry in adapter.start_scan(active=True):
     if b"zephyrproject" in entry.advertisement_bytes:
         print("found beacon run")
         found = True
@@ -81,71 +63,49 @@ def test_bsim_scan_zephyr_beacon(bsim_phy, circuitpython, zephyr_sample):
     """Scan for Zephyr beacon sample advertisement using bsim."""
     _ = zephyr_sample
 
-    start_time = time.time()
-    while time.time() - start_time < 6.0:
-        if "found beacon" in circuitpython.serial.all_output:
-            break
-        time.sleep(0.05)
+    circuitpython.wait_until_done()
 
-    assert "scan start" in circuitpython.serial.all_output
-    assert "found beacon" in circuitpython.serial.all_output
+    output = circuitpython.serial.all_output
+    assert "scan start" in output
+    assert "found beacon" in output
+    assert "scan done True" in output
 
 
-@pytest.mark.zephyr_sample("bluetooth/beacon", timeout=12.0)
+@pytest.mark.zephyr_sample("bluetooth/beacon")
+@pytest.mark.code_py_runs(2)
+@pytest.mark.duration(4)
 @pytest.mark.circuitpy_drive({"code.py": BSIM_SCAN_RELOAD_CODE})
 def test_bsim_scan_zephyr_beacon_reload(bsim_phy, circuitpython, zephyr_sample):
     """Scan for Zephyr beacon, soft reload, and scan again."""
     _ = zephyr_sample
 
-    start_time = time.time()
-    sent_reload = False
-    while time.time() - start_time < 12.0:
-        output = circuitpython.serial.all_output
+    circuitpython.serial.wait_for("scan run done")
+    circuitpython.serial.wait_for("Press any key to enter the REPL")
+    circuitpython.serial.write("\x04")
 
-        if (
-            not sent_reload
-            and "scan run done" in output
-            and "Press any key to enter the REPL" in output
-        ):
-            time.sleep(0.2)
-            circuitpython.serial.write("\x04")
-            sent_reload = True
-
-        if sent_reload and output.count("scan run done") >= 2:
-            break
-        time.sleep(0.05)
+    circuitpython.wait_until_done()
 
     output = circuitpython.serial.all_output
-    assert "scan run start" in output
+    assert output.count("scan run start") >= 2
     assert output.count("found beacon run") >= 2
-    assert output.count("scan run done") >= 2
+    assert output.count("scan run done True") >= 2
 
 
-@pytest.mark.zephyr_sample("bluetooth/beacon", timeout=12.0)
+@pytest.mark.zephyr_sample("bluetooth/beacon")
+@pytest.mark.code_py_runs(2)
+@pytest.mark.duration(4)
 @pytest.mark.circuitpy_drive({"code.py": BSIM_SCAN_RELOAD_NO_STOP_CODE})
 def test_bsim_scan_zephyr_beacon_reload_no_stop(bsim_phy, circuitpython, zephyr_sample):
     """Scan for Zephyr beacon without explicit stop, soft reload, and scan again."""
     _ = zephyr_sample
 
-    start_time = time.time()
-    sent_reload = False
-    while time.time() - start_time < 12.0:
-        output = circuitpython.serial.all_output
+    circuitpython.serial.wait_for("scan run done")
+    circuitpython.serial.wait_for("Press any key to enter the REPL")
+    circuitpython.serial.write("\x04")
 
-        if (
-            not sent_reload
-            and "scan run done" in output
-            and "Press any key to enter the REPL" in output
-        ):
-            time.sleep(0.2)
-            circuitpython.serial.write("\x04")
-            sent_reload = True
-
-        if sent_reload and output.count("scan run done") >= 2:
-            break
-        time.sleep(0.05)
+    circuitpython.wait_until_done()
 
     output = circuitpython.serial.all_output
-    assert "scan run start" in output
+    assert output.count("scan run start") >= 2
     assert output.count("found beacon run") >= 2
-    assert output.count("scan run done") >= 2
+    assert output.count("scan run done True") >= 2
