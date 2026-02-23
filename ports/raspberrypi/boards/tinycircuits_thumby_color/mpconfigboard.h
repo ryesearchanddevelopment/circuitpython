@@ -20,8 +20,8 @@
 
 #define CIRCUITPY_BOARD_LCD_DC          (&pin_GPIO16)
 #define CIRCUITPY_BOARD_LCD_CS          (&pin_GPIO17)
-#define CIRCUITPY_BOARD_LCD_RESET       (&pin_GPIO11)
-#define CIRCUITPY_BOARD_LCD_BACKLIGHT   (&pin_GPIO20)
+#define CIRCUITPY_BOARD_LCD_RESET       (&pin_GPIO4)
+#define CIRCUITPY_BOARD_LCD_BACKLIGHT   (&pin_GPIO7)
 
 #define CIRCUITPY_BOARD_SPI             (1)
 #define CIRCUITPY_BOARD_SPI_PIN         {{.clock = DEFAULT_SPI_BUS_SCK, .mosi = DEFAULT_SPI_BUS_MOSI, .miso = NULL}}
