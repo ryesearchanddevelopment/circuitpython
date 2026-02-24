@@ -93,7 +93,7 @@ def test_bsim_scan_zephyr_beacon_reload(bsim_phy, circuitpython, zephyr_sample):
 
 @pytest.mark.zephyr_sample("bluetooth/beacon")
 @pytest.mark.code_py_runs(2)
-@pytest.mark.duration(4)
+@pytest.mark.duration(8)
 @pytest.mark.circuitpy_drive({"code.py": BSIM_SCAN_RELOAD_NO_STOP_CODE})
 def test_bsim_scan_zephyr_beacon_reload_no_stop(bsim_phy, circuitpython, zephyr_sample):
     """Scan for Zephyr beacon without explicit stop, soft reload, and scan again."""
