@@ -8,7 +8,8 @@ BUILD ?= build-$(BOARD)
 
 TRANSLATION ?= en_US
 
-.PHONY: $(BUILD)/zephyr-cp/zephyr/zephyr.elf flash debug run clean menuconfig all clean-all test fetch-port-submodules
+
+.PHONY: $(BUILD)/zephyr-cp/zephyr/zephyr.elf flash recover debug run clean menuconfig all clean-all test fetch-port-submodules
 
 $(BUILD)/zephyr-cp/zephyr/zephyr.elf:
 	python cptools/pre_zephyr_build_prep.py $(BOARD)
@@ -25,6 +26,9 @@ $(BUILD)/firmware.exe: $(BUILD)/zephyr-cp/zephyr/zephyr.elf
 
 flash: $(BUILD)/zephyr-cp/zephyr/zephyr.elf
 	west flash -d $(BUILD)
+
+recover: $(BUILD)/zephyr-cp/zephyr/zephyr.elf
+		west flash --recover -d $(BUILD)
 
 debug: $(BUILD)/zephyr-cp/zephyr/zephyr.elf
 	west debug -d $(BUILD)
