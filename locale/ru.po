@@ -1372,6 +1372,10 @@ msgstr "Неверный MAC-адрес"
 msgid "Invalid ROS domain ID"
 msgstr ""
 
+#: ports/zephyr-cp/common-hal/_bleio/Adapter.c
+msgid "Invalid advertising data"
+msgstr ""
+
 #: ports/espressif/common-hal/espidf/__init__.c py/moderrno.c
 msgid "Invalid argument"
 msgstr "Недопустимый аргумент"
@@ -3892,6 +3896,7 @@ msgid "non-hex digit"
 msgstr ""
 
 #: ports/nordic/common-hal/_bleio/Adapter.c
+#: ports/zephyr-cp/common-hal/_bleio/Adapter.c
 msgid "non-zero timeout must be > 0.01"
 msgstr "Ненулевое время ожидания должно быть > 0,01"
 
@@ -4376,6 +4381,7 @@ msgstr ""
 "Продолжительность таймаута превысила максимальное поддерживаемое значение"
 
 #: ports/nordic/common-hal/_bleio/Adapter.c
+#: ports/zephyr-cp/common-hal/_bleio/Adapter.c
 msgid "timeout must be < 655.35 secs"
 msgstr "таймаут должен быть < 655.35 сек"
 
