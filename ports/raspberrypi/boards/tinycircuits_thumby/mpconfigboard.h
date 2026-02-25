@@ -18,6 +18,3 @@
 
 #define CIRCUITPY_BOARD_SPI         (1)
 #define CIRCUITPY_BOARD_SPI_PIN     {{.clock = DEFAULT_SPI_BUS_SCK, .mosi = DEFAULT_SPI_BUS_MOSI, .miso = NULL}}
-
-// For entering safe mode
-#define CIRCUITPY_BOOT_BUTTON       (&pin_GPIO6)

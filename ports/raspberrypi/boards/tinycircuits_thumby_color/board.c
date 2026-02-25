@@ -62,12 +62,12 @@ void board_init(void) {
     common_hal_fourwire_fourwire_construct(
         bus,
         spi,
-        CIRCUITPY_BOARD_LCD_DC,     // DC
-        CIRCUITPY_BOARD_LCD_CS,     // CS
-        CIRCUITPY_BOARD_LCD_RESET,  // RST
-        80000000,                   // baudrate
-        0,                          // polarity
-        0                           // phase
+        MP_OBJ_FROM_PTR(CIRCUITPY_BOARD_LCD_DC),     // DC
+        MP_OBJ_FROM_PTR(CIRCUITPY_BOARD_LCD_CS),     // CS
+        MP_OBJ_FROM_PTR(CIRCUITPY_BOARD_LCD_RESET),  // RST
+        80000000,                                    // baudrate
+        0,                                           // polarity
+        0                                            // phase
         );
 
     busdisplay_busdisplay_obj_t *display = &allocate_display()->display;
