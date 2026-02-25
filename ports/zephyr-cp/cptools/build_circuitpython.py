@@ -317,7 +317,6 @@ async def build_circuitpython():
     circuitpython_flags.append(f"-DCIRCUITPY_ENABLE_MPY_NATIVE={1 if enable_mpy_native else 0}")
     circuitpython_flags.append(f"-DCIRCUITPY_FULL_BUILD={1 if full_build else 0}")
     circuitpython_flags.append(f"-DCIRCUITPY_SETTINGS_TOML={1 if full_build else 0}")
-    circuitpython_flags.append(f"-DCIRCUITPY_OS_GETENV={1 if full_build else 0}")
     circuitpython_flags.append("-DCIRCUITPY_STATUS_BAR=1")
     circuitpython_flags.append(f"-DCIRCUITPY_USB_HOST={1 if usb_host else 0}")
     circuitpython_flags.append(f"-DCIRCUITPY_BOARD_ID='\"{board}\"'")
