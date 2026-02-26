@@ -97,7 +97,9 @@ def bsim_phy(request, bsim_phy_binary, native_sim_env, sim_id):
         sample_device_id = int(sample_marker.kwargs.get("device_id", 1))
         devices = max(devices, sample_device_id + 1)
 
-    sim_length_us = int(duration * 1e6)
+    # Do not pass -sim_length: if the PHY exits on simulated time, device 0 can
+    # still be flushing UART output and test output can get truncated. Instead,
+    # let pytest own process lifetime and terminate the PHY at fixture teardown.
     cmd = [
         "stdbuf",
         "-oL",
@@ -105,7 +107,6 @@ def bsim_phy(request, bsim_phy_binary, native_sim_env, sim_id):
         "-v=9",  # Cleaning up level is on 9. Connecting is 7.
         f"-s={sim_id}",
         f"-D={devices}",
-        f"-sim_length={sim_length_us}",
     ]
     print("Running:", " ".join(cmd))
     proc = subprocess.Popen(
