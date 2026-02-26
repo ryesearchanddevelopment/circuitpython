@@ -733,7 +733,7 @@ void common_hal_bleio_adapter_stop_advertising(bleio_adapter_obj_t *self) {
 }
 
 bool common_hal_bleio_adapter_get_advertising(bleio_adapter_obj_t *self) {
-    return ble_gap_adv_active();
+    return common_hal_bleio_adapter_get_enabled(self) && ble_gap_adv_active();
 }
 
 bool common_hal_bleio_adapter_get_connected(bleio_adapter_obj_t *self) {
