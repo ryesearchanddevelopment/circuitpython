@@ -50,6 +50,7 @@ getpass = false
 gifio = false
 gnss = false
 hashlib = false
+hostnetwork = false
 i2cdisplaybus = true # Zephyr board has busio
 i2cioexpander = false
 i2ctarget = false

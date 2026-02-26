@@ -47,6 +47,10 @@ def pytest_configure(config):
         "markers",
         "input_trace(trace): inject input signal trace data into native_sim",
     )
+    config.addinivalue_line(
+        "markers",
+        "native_sim_rt: run native_sim in realtime mode (-rt instead of -no-rt)",
+    )
 
 
 ZEPHYR_CP = Path(__file__).parent.parent
@@ -207,6 +211,8 @@ def circuitpython(request, board, sim_id, native_sim_binary, native_sim_env, tmp
         else:
             code_py_runs = int(runs_marker.args[0])
 
+        use_realtime = request.node.get_closest_marker("native_sim_rt") is not None
+
         if "bsim" in board:
             cmd = [str(native_sim_binary), f"--flash_app={flash}"]
             if instance_count > 1:
@@ -224,7 +230,8 @@ def circuitpython(request, board, sim_id, native_sim_binary, native_sim_env, tmp
         else:
             cmd = [str(native_sim_binary), f"--flash={flash}"]
             # native_sim vm-runs includes the boot VM setup run.
-            cmd.extend(("-no-rt", "-wait_uart", f"--vm-runs={code_py_runs + 1}"))
+            realtime_flag = "-rt" if use_realtime else "-no-rt"
+            cmd.extend((realtime_flag, "-wait_uart", f"--vm-runs={code_py_runs + 1}"))
 
         if input_trace_file is not None:
             cmd.append(f"--input-trace={input_trace_file}")
