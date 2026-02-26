@@ -52,6 +52,7 @@ DEFAULT_MODULES = [
     "json",
     "random",
     "digitalio",
+    "rotaryio",
     "rainbowio",
     "traceback",
     "warnings",
@@ -81,9 +82,12 @@ REVERSE_DEPENDENCIES = {
 }
 
 # Other flags to set when a module is enabled
-EXTRA_FLAGS = {"busio": ["BUSIO_SPI", "BUSIO_I2C"]}
+EXTRA_FLAGS = {
+    "busio": ["BUSIO_SPI", "BUSIO_I2C"],
+    "rotaryio": ["ROTARYIO_SOFTENCODER"],
+}
 
-SHARED_MODULE_AND_COMMON_HAL = ["_bleio", "os"]
+SHARED_MODULE_AND_COMMON_HAL = ["_bleio", "os", "rotaryio"]
 
 # Mapping from module directory name to the flag name used in CIRCUITPY_<FLAG>
 MODULE_FLAG_NAMES = {

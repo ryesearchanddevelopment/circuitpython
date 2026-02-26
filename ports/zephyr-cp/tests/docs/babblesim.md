@@ -59,6 +59,18 @@ pytest tests/test_bsim_ble_scan.py -v
 pytest tests/test_bsim_ble_advertising.py -v
 ```
 
+## Pytest markers
+
+For bsim-specific test tuning:
+
+- `@pytest.mark.duration(seconds)` controls simulation runtime/timeout.
+
+Example:
+
+```py
+pytestmark = pytest.mark.duration(30.0)
+```
+
 ## Notes
 
 - The bsim test spawns two instances that share a sim id. It only checks UART

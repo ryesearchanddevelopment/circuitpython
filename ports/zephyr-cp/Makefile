@@ -8,6 +8,8 @@ BUILD ?= build-$(BOARD)
 
 TRANSLATION ?= en_US
 
+.DEFAULT_GOAL := $(BUILD)/zephyr-cp/zephyr/zephyr.elf
+
 .PHONY: $(BUILD)/zephyr-cp/zephyr/zephyr.elf flash recover debug run run-sim clean menuconfig all clean-all test fetch-port-submodules
 
 $(BUILD)/zephyr-cp/zephyr/zephyr.elf:
@@ -22,6 +24,9 @@ $(BUILD)/firmware.hex: $(BUILD)/zephyr-cp/zephyr/zephyr.elf
 
 $(BUILD)/firmware.exe: $(BUILD)/zephyr-cp/zephyr/zephyr.elf
 	cp $(BUILD)/zephyr-cp/zephyr/zephyr.exe $@
+
+$(BUILD)/firmware.uf2: $(BUILD)/zephyr-cp/zephyr/zephyr.elf
+	cp $(BUILD)/zephyr-cp/zephyr/zephyr.uf2 $@
 
 flash: $(BUILD)/zephyr-cp/zephyr/zephyr.elf
 	west flash -d $(BUILD)
