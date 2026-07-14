@@ -776,6 +776,10 @@ $(BUILD)/firmware.elf: $(OBJ) $(BOARD_LD) link-$(CHIP_VARIANT_LOWER).ld
 	$(Q)echo $(OBJ) > $(BUILD)/firmware.objs
 	$(Q)echo $(PICO_LDFLAGS) > $(BUILD)/firmware.ldflags
 	$(Q)$(CC) -o $@ $(CFLAGS) @$(BUILD)/firmware.ldflags $(LINKER_SCRIPTS) -Wl,--print-memory-usage -Wl,-Map=$@.map -Wl,-cref -Wl,--gc-sections @$(BUILD)/firmware.objs -Wl,-lc
+ifeq ($(CIRCUITPY_USB_HOST), 1)
+	$(STEPECHO) "CHECK core1 flash calls"
+	$(Q)$(PYTHON) $(TOP)/tools/check_core1_flash_calls.py $@
+endif
 endif
 
 $(BUILD)/firmware.bin: $(BUILD)/firmware.elf
