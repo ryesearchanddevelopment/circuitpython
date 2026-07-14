@@ -173,10 +173,7 @@ def main():
         for fn, n in sorted(indirect_notes):
             print(f"  {fn} ({n} indirect call site(s))")
     if violations:
-        print(
-            f"\nFAIL: {len(violations)} flash-resident function(s) reachable "
-            f"from core1:"
-        )
+        print(f"\nFAIL: {len(violations)} flash-resident function(s) reachable from core1:")
         for fn in sorted(violations):
             print(f"  {fn} @ {funcs[fn]:#010x}")
             print(f"    via: {chain(fn)}")
