@@ -768,6 +768,26 @@ endif
 
 LINKER_SCRIPTS += -Wl,-T,link-$(CHIP_VARIANT_LOWER).ld
 
+# Builds where core1 locks flash out via the MPU and may only execute
+# RAM-resident code: USB host (PIO-USB frame loop), and picodvi on RP2040
+# (TMDS encode loop). Check the linked ELF from each core1 entry point.
+# picodvi's DMA IRQ handler and scanline callback run on core1 but are
+# reached only through registered pointers, so they are extra roots.
+CORE1_CHECK_ROOTS :=
+ifeq ($(CIRCUITPY_USB_HOST),1)
+CORE1_CHECK_ROOTS += --root core1_main
+endif
+ifeq ($(CHIP_VARIANT),RP2040)
+ifeq ($(CIRCUITPY_PICODVI),1)
+# libdvi's IRQ handler calls flash-resident panic() on a "can't happen" queue
+# overflow. With flash locked out that panic would hard fault instead, but
+# either way core1 halts, so allow it rather than blocking the build on
+# vendored code.
+CORE1_CHECK_ROOTS += --root core1_main --root dvi_dma1_irq --root core1_scanline_callback \
+	--allow panic
+endif
+endif
+
 ifeq ($(VALID_BOARD),)
 $(BUILD)/firmware.elf: invalid-board
 else
@@ -776,9 +796,9 @@ $(BUILD)/firmware.elf: $(OBJ) $(BOARD_LD) link-$(CHIP_VARIANT_LOWER).ld
 	$(Q)echo $(OBJ) > $(BUILD)/firmware.objs
 	$(Q)echo $(PICO_LDFLAGS) > $(BUILD)/firmware.ldflags
 	$(Q)$(CC) -o $@ $(CFLAGS) @$(BUILD)/firmware.ldflags $(LINKER_SCRIPTS) -Wl,--print-memory-usage -Wl,-Map=$@.map -Wl,-cref -Wl,--gc-sections @$(BUILD)/firmware.objs -Wl,-lc
-ifeq ($(CIRCUITPY_USB_HOST), 1)
+ifneq ($(CORE1_CHECK_ROOTS),)
 	$(STEPECHO) "CHECK core1 flash calls"
-	$(Q)$(PYTHON) $(TOP)/tools/check_core1_flash_calls.py $@
+	$(Q)$(PYTHON) $(TOP)/tools/check_core1_flash_calls.py $@ $(CORE1_CHECK_ROOTS)
 endif
 endif
 

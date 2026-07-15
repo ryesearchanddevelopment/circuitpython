@@ -77,7 +77,7 @@ def main():
         help="symbol to skip (e.g. runs before the MPU is enabled)",
     )
     args = parser.parse_args()
-    roots = args.root or ["core1_main"]
+    roots = list(dict.fromkeys(args.root or ["core1_main"]))
     allow = set(DEFAULT_ALLOW) | set(args.allow)
 
     dis = subprocess.run(
@@ -134,10 +134,13 @@ def main():
             if tgt is not None:
                 edges.setdefault(veneer, set()).add(tgt)
 
+    # A root may be absent from a given build (e.g. core1_scanline_callback
+    # only exists on picodvi builds); check whichever roots are present.
     missing = [r for r in roots if r not in funcs]
     if missing:
-        # A board without usb_host has no core1_main; nothing to check.
         print(f"{args.elf}: root symbol(s) not present, skipping: {', '.join(missing)}")
+    roots = [r for r in roots if r in funcs]
+    if not roots:
         return 0
 
     # BFS from roots, remembering one call chain per function for reporting.
