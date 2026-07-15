@@ -45,8 +45,13 @@ FLASH_LO, FLASH_HI = 0x10000000, 0x20000000
 # Symbols that are reachable from a core1 root but are known to execute only
 # before the MPU cuts off flash access. Keep this list short and commented.
 DEFAULT_ALLOW = [
-    # core1_main calls this while configuring SysTick, before enabling the MPU.
+    # usb_host core1_main calls this while configuring SysTick, before
+    # enabling the MPU.
     "common_hal_mcu_processor_get_frequency",
+    # picodvi Framebuffer_RP2040 core1_main calls these during startup,
+    # before enabling the MPU.
+    "dvi_register_irqs_this_core",
+    "dvi_start",
 ]
 
 
