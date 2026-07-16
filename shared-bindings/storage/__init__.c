@@ -93,7 +93,7 @@ MP_DEFINE_CONST_FUN_OBJ_1(storage_umount_obj, storage_umount);
 //| ) -> None:
 //|     """Remounts the given path with new parameters.
 //|
-//|     This can always be done from boot.py. After boot, it can only be done when the host computer
+//|     This can always be done from ``boot.py``. After boot, it can only be done when the host computer
 //|     doesn't have write access and CircuitPython isn't currently writing to the filesystem. An
 //|     exception will be raised if this is the case. Some host OSes allow you to eject a drive which
 //|     will allow for remounting.
@@ -189,7 +189,27 @@ MP_DEFINE_CONST_FUN_OBJ_KW(storage_erase_filesystem_obj, 0, storage_erase_filesy
 //| def disable_usb_drive() -> None:
 //|     """Disable presenting ``CIRCUITPY`` as a USB mass storage device.
 //|     By default, the device is enabled and ``CIRCUITPY`` is visible.
-//|     Can be called in ``boot.py``, before USB is connected."""
+//|     If `disable_usb_drive()` is called in ``boot.py``, before USB is connected,
+//|     the mass storage device is not presented at all.
+//|     The drive cannot be made available again until the next hard reset;
+//|     `enable_usb_drive()` is not available.
+//|
+//|     If `disable_usb_drive()` is called after ``code.py`` starts, or from the REPL,
+//|     the USB drive logical unit (LUN) will report as "not ready",
+//|     causing the host to unmount it.
+//|     It can be made ready and available again by calling `enable_usb_drive()`.
+//|     When `disable_usb_drive` is called after ``code.py`` starts or in the REPL,
+//|     the call will delay 2.5 seconds before returning,
+//|     so that host has time to detect that the drive is not ready.
+//|     The host polls the device approximately every one or two seconds.
+//|
+//|     If `disable_usb_drive()` is called when the host is actively writing CIRCUITPY,
+//|     filesystem corruption could occur. Be careful to call it when the host is quiescent.
+//|
+//|     When the USB drive is disabled, CIRCUITPY becomes read/write, and can be written
+//|     from user code or the REPL. This is easier than arranging for a `remount()` in ``boot.py``.
+//|     Code editors and file uploaders can use this feature to write files via the REPL.
+//|     """
 //|     ...
 //|
 //|
@@ -206,14 +226,21 @@ static mp_obj_t storage_disable_usb_drive(void) {
 MP_DEFINE_CONST_FUN_OBJ_0(storage_disable_usb_drive_obj, storage_disable_usb_drive);
 
 //| def enable_usb_drive() -> None:
-//|     """Enabled presenting ``CIRCUITPY`` as a USB mass storage device.
+//|     """Enable presenting ``CIRCUITPY`` as a USB mass storage device.
 //|     By default, the device is enabled and ``CIRCUITPY`` is visible,
 //|     so you do not normally need to call this function.
-//|     Can be called in ``boot.py``, before USB is connected.
+//|     You can call `enable_usb_drive()` in ``boot.py``, before USB is connected,
+//|     to reverse a `disable_usb_drive()` in ``boot.py``.
 //|
-//|     If you enable too many devices at once, you will run out of USB endpoints.
+//|     If you call `enable_usb_drive()` after ``code.py`` starts or in the REPL,
+//|     you can reverse the effect of a previous `disable_usb_drive()`,
+//|     but only if `disable_usb_drive()` was also called after ``code.py`` started or in the REPL.
+//|     The CIRCUITPY drive will reappear to the host, and become read-only again
+//|     if it was previously read-only.
+//|
+//|     If you enable too many USB devices at once, you will run out of USB endpoints.
 //|     The number of available endpoints varies by microcontroller.
-//|     CircuitPython will go into safe mode after running boot.py to inform you if
+//|     CircuitPython will go into safe mode after running ``boot.py`` to inform you if
 //|     not enough endpoints are available.
 //|     """
 //|     ...
