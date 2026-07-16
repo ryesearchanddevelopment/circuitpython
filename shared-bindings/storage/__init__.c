@@ -188,27 +188,9 @@ MP_DEFINE_CONST_FUN_OBJ_KW(storage_erase_filesystem_obj, 0, storage_erase_filesy
 
 //| def disable_usb_drive() -> None:
 //|     """Disable presenting ``CIRCUITPY`` as a USB mass storage device.
-//|     By default, the device is enabled and ``CIRCUITPY`` is visible.
-//|     If `disable_usb_drive()` is called in ``boot.py``, before USB is connected,
-//|     the mass storage device is not presented at all.
-//|     The drive cannot be made available again until the next hard reset;
-//|     `enable_usb_drive()` is not available.
-//|
-//|     If `disable_usb_drive()` is called after ``code.py`` starts, or from the REPL,
-//|     the USB drive logical unit (LUN) will report as "not ready",
-//|     causing the host to unmount it.
-//|     It can be made ready and available again by calling `enable_usb_drive()`.
-//|     When `disable_usb_drive` is called after ``code.py`` starts or in the REPL,
-//|     the call will delay 2.5 seconds before returning,
-//|     so that host has time to detect that the drive is not ready.
-//|     The host polls the device approximately every one or two seconds.
-//|
-//|     If `disable_usb_drive()` is called when the host is actively writing CIRCUITPY,
-//|     filesystem corruption could occur. Be careful to call it when the host is quiescent.
-//|
-//|     When the USB drive is disabled, CIRCUITPY becomes read/write, and can be written
-//|     from user code or the REPL. This is easier than arranging for a `remount()` in ``boot.py``.
-//|     Code editors and file uploaders can use this feature to write files via the REPL.
+//|     By default, the device is enabled and ``CIRCUITPY`` is visible, if USB is available.
+//|     Must called in ``boot.py``, before USB is connected.
+//      If you want to disable the USB drive after `boot.py` has run, see `unsafe_disable_usb_drive()`.
 //|     """
 //|     ...
 //|
@@ -225,16 +207,53 @@ static mp_obj_t storage_disable_usb_drive(void) {
 }
 MP_DEFINE_CONST_FUN_OBJ_0(storage_disable_usb_drive_obj, storage_disable_usb_drive);
 
+//| def unsafe_disable_usb_drive() -> None:
+//|     """Disable presenting ``CIRCUITPY`` as a USB mass storage device.
+//|     By default, the device is enabled and ``CIRCUITPY`` is visible.
+//|     Unlike `disable_usb_drive()`, `unsafe_disable_usb_drive()` can be called
+//|     after ``code.py`` starts or from the REPL, after USB has started.
+//|
+//|     When `unsafe_disable_usb_drive()` after USB has started,
+//|     the ``CIRCUITPY`` USB drive logical unit (LUN) will report as "not ready",
+//|     causing the host to unmount it.
+//|     The drive can be made ready and available again by calling `enable_usb_drive()`.
+//|     When `disable_usb_drive` is called after ``code.py`` starts or in the REPL,
+//|     the call will delay 2.5 seconds before returning,
+//|     so that host has time to detect that the drive is not ready.
+//|     The host polls the device approximately every one or two seconds.
+//|
+//|     Note that if ``unsafe_disable_usb_drive()`` is called when the host is actively writing CIRCUITPY,
+//|     filesystem corruption could occur. Be careful to call it when the host is quiescent.
+//|
+//|     When the USB drive is disabled, CIRCUITPY becomes read/write, and can be written
+//|     from user code or the REPL. This is easier than arranging for a `remount()` in ``boot.py``.
+//|     Code editors and file uploaders can use this feature to write files via the REPL.
+//|
+//|     If `unsafe_disable_usb_drive()` is called in ``boot.py``, it is identical to calling
+//|     `disable_usb_drive()`.
+//|     """
+//|     ...
+//|
+//|
+static mp_obj_t storage_unsafe_disable_usb_drive(void) {
+    #if CIRCUITPY_USB_DEVICE && CIRCUITPY_USB_MSC
+    if (!common_hal_storage_unsafe_disable_usb_drive()) {
+    #else
+    if (true) {
+        #endif
+        mp_raise_RuntimeError(MP_ERROR_TEXT("Cannot change USB devices now"));
+    }
+    return mp_const_none;
+}
+MP_DEFINE_CONST_FUN_OBJ_0(storage_unsafe_disable_usb_drive_obj, storage_unsafe_disable_usb_drive);
+
 //| def enable_usb_drive() -> None:
 //|     """Enable presenting ``CIRCUITPY`` as a USB mass storage device.
 //|     By default, the device is enabled and ``CIRCUITPY`` is visible,
-//|     so you do not normally need to call this function.
-//|     You can call `enable_usb_drive()` in ``boot.py``, before USB is connected,
-//|     to reverse a `disable_usb_drive()` in ``boot.py``.
+//|     so you do not normally need to call this function in ``boot.py``.
 //|
 //|     If you call `enable_usb_drive()` after ``code.py`` starts or in the REPL,
-//|     you can reverse the effect of a previous `disable_usb_drive()`,
-//|     but only if `disable_usb_drive()` was also called after ``code.py`` started or in the REPL.
+//|     you can reverse the effect of a previous `unsafe_disable_usb_drive()`.
 //|     The CIRCUITPY drive will reappear to the host, and become read-only again
 //|     if it was previously read-only.
 //|
@@ -261,13 +280,14 @@ MP_DEFINE_CONST_FUN_OBJ_0(storage_enable_usb_drive_obj, storage_enable_usb_drive
 static const mp_rom_map_elem_t storage_module_globals_table[] = {
     { MP_ROM_QSTR(MP_QSTR___name__), MP_ROM_QSTR(MP_QSTR_storage) },
 
-    { MP_ROM_QSTR(MP_QSTR_mount),             MP_ROM_PTR(&storage_mount_obj) },
-    { MP_ROM_QSTR(MP_QSTR_umount),            MP_ROM_PTR(&storage_umount_obj) },
-    { MP_ROM_QSTR(MP_QSTR_remount),           MP_ROM_PTR(&storage_remount_obj) },
-    { MP_ROM_QSTR(MP_QSTR_getmount),          MP_ROM_PTR(&storage_getmount_obj) },
-    { MP_ROM_QSTR(MP_QSTR_erase_filesystem),  MP_ROM_PTR(&storage_erase_filesystem_obj) },
-    { MP_ROM_QSTR(MP_QSTR_disable_usb_drive), MP_ROM_PTR(&storage_disable_usb_drive_obj) },
-    { MP_ROM_QSTR(MP_QSTR_enable_usb_drive),  MP_ROM_PTR(&storage_enable_usb_drive_obj) },
+    { MP_ROM_QSTR(MP_QSTR_mount),                    MP_ROM_PTR(&storage_mount_obj) },
+    { MP_ROM_QSTR(MP_QSTR_umount),                   MP_ROM_PTR(&storage_umount_obj) },
+    { MP_ROM_QSTR(MP_QSTR_remount),                  MP_ROM_PTR(&storage_remount_obj) },
+    { MP_ROM_QSTR(MP_QSTR_getmount),                 MP_ROM_PTR(&storage_getmount_obj) },
+    { MP_ROM_QSTR(MP_QSTR_erase_filesystem),         MP_ROM_PTR(&storage_erase_filesystem_obj) },
+    { MP_ROM_QSTR(MP_QSTR_disable_usb_drive),        MP_ROM_PTR(&storage_disable_usb_drive_obj) },
+    { MP_ROM_QSTR(MP_QSTR_enable_usb_drive),         MP_ROM_PTR(&storage_enable_usb_drive_obj) },
+    { MP_ROM_QSTR(MP_QSTR_unsafe_disable_usb_drive), MP_ROM_PTR(&storage_unsafe_disable_usb_drive_obj) },
 
 //| class VfsFat:
 //|     def __init__(self, block_device: BlockDevice) -> None:

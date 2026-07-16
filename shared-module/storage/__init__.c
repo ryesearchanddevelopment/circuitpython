@@ -53,6 +53,14 @@ static bool usb_drive_set_enabled(bool enabled) {
 }
 
 bool common_hal_storage_disable_usb_drive(void) {
+    if (tud_connected()) {
+        // Complain if already connected. Use `storage.unsafe_disable_usb_drive()` in that case.
+        return false;
+    }
+    return usb_drive_set_enabled(false);
+}
+
+bool common_hal_storage_unsafe_disable_usb_drive(void) {
     return usb_drive_set_enabled(false);
 }
 
@@ -61,6 +69,10 @@ bool common_hal_storage_enable_usb_drive(void) {
 }
 #else
 bool common_hal_storage_disable_usb_drive(void) {
+    return false;
+}
+
+bool common_hal_storage_unsafe_disable_usb_drive(void) {
     return false;
 }
 
