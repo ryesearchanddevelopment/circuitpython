@@ -42,8 +42,8 @@ OBJDUMP = "arm-none-eabi-objdump"
 
 FLASH_LO, FLASH_HI = 0x10000000, 0x20000000
 
-# Symbols that are reachable from a core1 root but are known to execute only
-# before the MPU cuts off flash access. Keep this list short and commented.
+# Symbols that are reachable from a core1 root but are known never to execute
+# with flash locked out. Keep this list short and commented.
 DEFAULT_ALLOW = [
     # usb_host core1_main calls this while configuring SysTick, before
     # enabling the MPU.
@@ -52,6 +52,10 @@ DEFAULT_ALLOW = [
     # before enabling the MPU.
     "dvi_register_irqs_this_core",
     "dvi_start",
+    # The flash-resident print half of the RAM-resident __wrap_panic
+    # (supervisor/port.c); only called after a get_core_num() == 0 check,
+    # and core0 never locks flash out.
+    "panic_core0",
 ]
 
 

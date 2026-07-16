@@ -229,6 +229,10 @@ DISABLE_WARNINGS = -Wno-cast-align
 CFLAGS += $(INC) -Wtype-limits -Wall -Werror -std=gnu11 -fshort-enums $(BASE_CFLAGS) $(CFLAGS_MOD) $(COPT) $(DISABLE_WARNINGS) -Werror=missing-prototypes -Wold-style-definition
 
 PICO_LDFLAGS = --specs=nosys.specs --specs=nano.specs
+# The SDK's panic() is flash-resident, but core1 may run with flash access
+# disabled by the MPU. Route panics to the RAM-resident __wrap_panic in
+# supervisor/port.c, which halts safely on core1 and prints on core0.
+PICO_LDFLAGS += -Wl,--wrap=panic
 
 # Use toolchain libm if we're not using our own.
 ifndef INTERNAL_LIBM
@@ -779,12 +783,7 @@ CORE1_CHECK_ROOTS += --root core1_main
 endif
 ifeq ($(CHIP_VARIANT),RP2040)
 ifeq ($(CIRCUITPY_PICODVI),1)
-# libdvi's IRQ handler calls flash-resident panic() on a "can't happen" queue
-# overflow. With flash locked out that panic would hard fault instead, but
-# either way core1 halts, so allow it rather than blocking the build on
-# vendored code.
-CORE1_CHECK_ROOTS += --root core1_main --root dvi_dma1_irq --root core1_scanline_callback \
-	--allow panic
+CORE1_CHECK_ROOTS += --root core1_main --root dvi_dma1_irq --root core1_scanline_callback
 endif
 endif
 
