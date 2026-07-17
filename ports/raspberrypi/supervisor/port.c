@@ -4,9 +4,12 @@
 //
 // SPDX-License-Identifier: MIT
 
+#include <stdarg.h>
 #include <stddef.h>
+#include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 #include "supervisor/background_callback.h"
 #include "supervisor/board.h"
@@ -75,6 +78,40 @@
 #include "lib/tlsf/tlsf.h"
 
 critical_section_t background_queue_lock;
+
+// The SDK's panic() lives in flash, but core1 may run with flash access
+// disabled by the MPU (usb_host and picodvi lock it out), where a flash call
+// hard faults before anything is printed. -Wl,--wrap=panic routes every
+// panic here instead: core0 keeps the SDK behavior, core1 halts from RAM.
+// Verified by tools/check_core1_flash_calls.py.
+void __wrap_panic(const char *fmt, ...) __attribute__((noreturn, format(printf, 1, 2)));
+void panic_core0(const char *fmt, va_list args) __attribute__((noreturn, format(printf, 1, 0)));
+
+// Flash-resident; only ever called from core0 (see __wrap_panic). Mirrors
+// the SDK implementation. noinline keeps the flash-calling code out of the
+// RAM-resident wrapper below.
+__attribute__((noinline)) void panic_core0(const char *fmt, va_list args) {
+    puts("\n*** PANIC ***\n");
+    if (fmt) {
+        vprintf(fmt, args);
+        puts("");
+    }
+    _exit(1);
+}
+
+void __not_in_flash_func(__wrap_panic)(const char *fmt, ...) {
+    if (get_core_num() == 0) {
+        va_list args;
+        va_start(args, fmt);
+        panic_core0(fmt, args);
+    }
+    // Flash may be MPU-locked on this core and stdio is core0-only, so the
+    // message is unprintable here. Halt in RAM: a debugger stops at the
+    // breakpoint, otherwise spin.
+    __breakpoint();
+    while (1) {
+    }
+}
 
 extern volatile bool mp_msc_enabled;
 
