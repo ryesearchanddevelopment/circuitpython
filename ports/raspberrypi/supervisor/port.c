@@ -13,6 +13,7 @@
 
 #include "supervisor/background_callback.h"
 #include "supervisor/board.h"
+#include "supervisor/linker.h"
 #include "supervisor/port.h"
 
 #include "bindings/rp2pio/StateMachine.h"
@@ -45,6 +46,7 @@
 #include "supervisor/shared/stack.h"
 #include "supervisor/shared/tick.h"
 
+#include "hardware/structs/scb.h"
 #include "hardware/structs/watchdog.h"
 #include "hardware/gpio.h"
 #include "hardware/uart.h"
@@ -421,6 +423,16 @@ safe_mode_t port_init(void) {
     common_hal_rtc_init();
     #endif
 
+    // Send-event-on-pend, so the WFE in port_idle_until_interrupt wakes on a
+    // pending interrupt (as WFI did) in addition to waking on SEV — including
+    // the SEV core 1 sends via port_wake_main_task() when it queues USB host
+    // work.
+    #if PICO_RP2040
+    scb_hw->scr |= M0PLUS_SCR_SEVONPEND_BITS;
+    #else
+    scb_hw->scr |= M33_SCR_SEVONPEND_BITS;
+    #endif
+
     // For the tick.
     hardware_alarm_claim(0);
     hardware_alarm_set_callback(0, _tick_callback);
@@ -600,7 +612,11 @@ void port_idle_until_interrupt(void) {
     if (!background_callback_pending() && !tud_task_event_ready() && !_woken_up) {
         #endif
         __DSB();
-        __WFI();
+        // WFE, not WFI: the event register is sticky, so a SEV from core 1
+        // (port_wake_main_task, e.g. a USB host event) that lands between the
+        // checks above and here still terminates the wait. Pending interrupts
+        // wake it too, via SEVONPEND (set in port_init).
+        __wfe();
     }
     common_hal_mcu_enable_interrupts();
     #else
@@ -619,7 +635,8 @@ void port_idle_until_interrupt(void) {
     if (!background_callback_pending() && !tud_task_event_ready() && !_woken_up) {
         #endif
         __DSB();
-        __WFI();
+        // WFE, not WFI: see the RP2040 branch above.
+        __wfe();
     }
 
     // and restore basepri before reenabling interrupts
@@ -628,6 +645,20 @@ void port_idle_until_interrupt(void) {
 
     restore_interrupts(state);
     #endif
+}
+
+// Called whenever a background callback is queued, including from core 1
+// (which runs the PIO-USB host and posts its events here). SEV is broadcast
+// to both cores and latches in the event register, so it reliably ends the
+// WFE in port_idle_until_interrupt even if it arrives before the WFE starts.
+// Without this, core 0 sleeps through host events for the remainder of a
+// time.sleep(): device removal processing and enumeration stall until the
+// next unrelated wakeup.
+// PLACE_IN_ITCM: core 1 runs with flash execute-never, so this must live in
+// RAM like its background_callback_add_core caller (__sev inlines to a bare
+// instruction).
+void PLACE_IN_ITCM(port_wake_main_task)(void) {
+    __sev();
 }
 
 /**
