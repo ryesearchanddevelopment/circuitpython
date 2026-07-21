@@ -140,24 +140,24 @@ static mp_obj_t storage_getmount(const mp_obj_t mnt_in) {
 MP_DEFINE_CONST_FUN_OBJ_1(storage_getmount_obj, storage_getmount);
 
 //| def erase_filesystem(extended: Optional[bool] = None) -> None:
-//|     """Erase and re-create the ``CIRCUITPY`` filesystem.
+//|     """Erase and re-create the **CIRCUITPY** filesystem.
 //|
-//|     On boards that present USB-visible ``CIRCUITPY`` drive (e.g., SAMD21 and SAMD51),
+//|     On boards that present USB-visible **CIRCUITPY** drive (e.g., SAMD21 and SAMD51),
 //|     then call `microcontroller.reset()` to restart CircuitPython and have the
-//|     host computer remount CIRCUITPY.
+//|     host computer remount **CIRCUITPY**.
 //|
-//|     This function can be called from the REPL when ``CIRCUITPY``
+//|     This function can be called from the REPL when **CIRCUITPY**
 //|     has become corrupted.
 //|
 //|     :param bool extended: On boards that support ``dualbank`` module
-//|         and the ``extended`` parameter, the ``CIRCUITPY`` storage can be
+//|         and the ``extended`` parameter, the **CIRCUITPY** storage can be
 //|         extended by setting this to `True`. If this isn't provided or
 //|         set to `None` (default), the existing configuration will be used.
 //|
 //|     .. note:: New firmware starts with storage extended. In case of an existing
 //|          filesystem (e.g. uf2 load), the existing extension setting is preserved.
 //|
-//|     .. warning:: All the data on ``CIRCUITPY`` will be lost, and
+//|     .. warning:: All the data on **CIRCUITPY** will be lost, and
 //|         CircuitPython will restart on certain boards."""
 //|     ...
 //|
@@ -187,8 +187,8 @@ static mp_obj_t storage_erase_filesystem(size_t n_args, const mp_obj_t *pos_args
 MP_DEFINE_CONST_FUN_OBJ_KW(storage_erase_filesystem_obj, 0, storage_erase_filesystem);
 
 //| def disable_usb_drive() -> None:
-//|     """Disable presenting ``CIRCUITPY`` as a USB mass storage device.
-//|     By default, the device is enabled and ``CIRCUITPY`` is visible, if USB is available.
+//|     """Disable presenting **CIRCUITPY** as a USB mass storage device.
+//|     By default, the device is enabled and **CIRCUITPY** is visible, if USB is available.
 //|     Must called in ``boot.py``, before USB is connected.
 //      If you want to disable the USB drive after `boot.py` has run, see `unsafe_disable_usb_drive()`.
 //|     """
@@ -208,13 +208,39 @@ static mp_obj_t storage_disable_usb_drive(void) {
 MP_DEFINE_CONST_FUN_OBJ_0(storage_disable_usb_drive_obj, storage_disable_usb_drive);
 
 //| def unsafe_disable_usb_drive() -> None:
-//|     """Disable presenting ``CIRCUITPY`` as a USB mass storage device.
-//|     By default, the device is enabled and ``CIRCUITPY`` is visible.
+//|     """Disable presenting **CIRCUITPY** as a USB mass storage device.
+//|     By default, the device is enabled and **CIRCUITPY** is visible.
+//|     After the call, **CIRCUITPY** will be read/write to your code or from the REPL.
+//|
 //|     Unlike `disable_usb_drive()`, `unsafe_disable_usb_drive()` can be called
 //|     after ``code.py`` starts or from the REPL, after USB has started.
 //|
-//|     When `unsafe_disable_usb_drive()` after USB has started,
-//|     the ``CIRCUITPY`` USB drive logical unit (LUN) will report as "not ready",
+//|     .. warning:: If ``unsafe_disable_usb_drive()`` is called when the host is actively writing **CIRCUITPY**,
+//|       filesystem corruption can occur.
+//|       It is similar to the sudden physical removal of a USB drive.
+//|       Before calling ``unsafe_disable_usb_drive()``,
+//|       make sure the host has finished any writes to **CIRCUITPY**.
+//|
+//|       * On Windows, do one of these:
+//|
+//|         * Eject ("Safely Remove") the **CIRCUITPY** drive.
+//|         * Use a "sync" program, such as `Sysinternals Sync <https://learn.microsoft.com/en-us/sysinternals/downloads/sync>`__.
+//|         * Programmatically call ``_commit()`` or ``_flushall()`` or similar.
+//|
+//|       * On Linux or macOS, do one of these:
+//|
+//|         * Eject (unmount) the **CIRCUITPY** drive.
+//|         * Type ``sync`` in a terminal.
+//|         * Programmatically call ``sync()`` or ``fsync()``.
+//|
+//|       * If none of the above are possible or convenient, wait several seconds to allow any writes to complete.
+//|         This can be unreliable, as the interval to wait depends on the host operating system
+//|         and how the drive is mounted.
+//|         In some operating systems, you can specify that the drive be mounted as "sync on write",
+//|         so that all writes happen immediately.
+//|
+//|     When `unsafe_disable_usb_drive()` is called after USB has started,
+//|     the **CIRCUITPY** USB drive logical unit (LUN) will report as "not ready",
 //|     causing the host to unmount it.
 //|     The drive can be made ready and available again by calling `enable_usb_drive()`.
 //|     When `disable_usb_drive` is called after ``code.py`` starts or in the REPL,
@@ -222,10 +248,7 @@ MP_DEFINE_CONST_FUN_OBJ_0(storage_disable_usb_drive_obj, storage_disable_usb_dri
 //|     so that host has time to detect that the drive is not ready.
 //|     The host polls the device approximately every one or two seconds.
 //|
-//|     Note that if ``unsafe_disable_usb_drive()`` is called when the host is actively writing CIRCUITPY,
-//|     filesystem corruption could occur. Be careful to call it when the host is quiescent.
-//|
-//|     When the USB drive is disabled, CIRCUITPY becomes read/write, and can be written
+//|     When the USB drive is disabled, **CIRCUITPY** becomes read/write, and can be written
 //|     from user code or the REPL. This is easier than arranging for a `remount()` in ``boot.py``.
 //|     Code editors and file uploaders can use this feature to write files via the REPL.
 //|
@@ -248,13 +271,13 @@ static mp_obj_t storage_unsafe_disable_usb_drive(void) {
 MP_DEFINE_CONST_FUN_OBJ_0(storage_unsafe_disable_usb_drive_obj, storage_unsafe_disable_usb_drive);
 
 //| def enable_usb_drive() -> None:
-//|     """Enable presenting ``CIRCUITPY`` as a USB mass storage device.
-//|     By default, the device is enabled and ``CIRCUITPY`` is visible,
+//|     """Enable presenting **CIRCUITPY** as a USB mass storage device.
+//|     By default, the device is enabled and **CIRCUITPY** is visible,
 //|     so you do not normally need to call this function in ``boot.py``.
 //|
 //|     If you call `enable_usb_drive()` after ``code.py`` starts or in the REPL,
 //|     you can reverse the effect of a previous `unsafe_disable_usb_drive()`.
-//|     The CIRCUITPY drive will reappear to the host, and become read-only again
+//|     The **CIRCUITPY** drive will reappear to the host, and become read-only again
 //|     if it was previously read-only.
 //|
 //|     If you enable too many USB devices at once, you will run out of USB endpoints.
