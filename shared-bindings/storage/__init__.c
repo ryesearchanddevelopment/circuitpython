@@ -208,14 +208,14 @@ static mp_obj_t storage_disable_usb_drive(void) {
 MP_DEFINE_CONST_FUN_OBJ_0(storage_disable_usb_drive_obj, storage_disable_usb_drive);
 
 //| def unsafe_disable_usb_drive() -> None:
-//|     """Disable presenting **CIRCUITPY** as a USB mass storage device.
+//|     """Disable presenting **CIRCUITPY** as a USB mass storage device even if in use.
 //|     By default, the device is enabled and **CIRCUITPY** is visible.
-//|     After the call, **CIRCUITPY** will be read/write to your code or from the REPL.
+//|     After the call, **CIRCUITPY** will be read/write to your code and from the REPL but not appear over USB.
 //|
 //|     Unlike `disable_usb_drive()`, `unsafe_disable_usb_drive()` can be called
 //|     after ``code.py`` starts or from the REPL, after USB has started.
 //|
-//|     .. warning:: If ``unsafe_disable_usb_drive()`` is called when the host is actively writing **CIRCUITPY**,
+//|     .. warning:: If ``unsafe_disable_usb_drive()`` is called when the host is in the middle of writing **CIRCUITPY**,
 //|       filesystem corruption can occur.
 //|       It is similar to the sudden physical removal of a USB drive.
 //|       Before calling ``unsafe_disable_usb_drive()``,
