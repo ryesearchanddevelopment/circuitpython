@@ -4,7 +4,7 @@ Environment Variables
 CircuitPython provides support for environment variables. These values
 can be examined by user code, and are also used as settings by CircuitPython during startup.
 
-CircuitPython looks for a  file called ``settings.toml`` at the ``CIRCUITPY`` drive root
+CircuitPython looks for a  file called ``settings.toml`` at the **CIRCUITPY** drive root
 to find the values of environment variables,
 The file format is a subset of the `TOML config file language <https://toml.io>`__.
 
