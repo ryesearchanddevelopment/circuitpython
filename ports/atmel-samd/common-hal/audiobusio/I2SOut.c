@@ -211,6 +211,9 @@ void common_hal_audiobusio_i2sout_play(audiobusio_i2sout_obj_t *self,
     if (common_hal_audiobusio_i2sout_get_playing(self)) {
         common_hal_audiobusio_i2sout_stop(self);
     }
+
+    audiosample_check(sample);
+
     #ifdef SAMD21
     if ((I2S->CTRLA.vec.CKEN & (1 << self->clock_unit)) == 1) {
         mp_raise_RuntimeError(MP_ERROR_TEXT("Clock unit in use"));
