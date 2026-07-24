@@ -149,6 +149,8 @@ void common_hal_audiobusio_i2sout_play(audiobusio_i2sout_obj_t *self,
         common_hal_audiobusio_i2sout_stop(self);
     }
 
+    audiosample_check(sample);
+
     // Get sample information
     uint8_t bits_per_sample = audiosample_get_bits_per_sample(sample);
     uint32_t sample_rate = audiosample_get_sample_rate(sample);

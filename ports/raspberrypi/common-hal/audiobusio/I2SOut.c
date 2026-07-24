@@ -262,6 +262,8 @@ void common_hal_audiobusio_i2sout_play(audiobusio_i2sout_obj_t *self,
         common_hal_audiobusio_i2sout_stop(self);
     }
 
+    audiosample_check(sample);
+
     uint8_t bits_per_sample = audiosample_get_bits_per_sample(sample);
     // Make sure we transmit a minimum of 16 bits.
     // TODO: Maybe we need an intermediate object to upsample instead. This is
