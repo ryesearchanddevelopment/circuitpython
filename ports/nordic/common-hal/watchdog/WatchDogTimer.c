@@ -161,7 +161,7 @@ void common_hal_watchdog_set_mode(watchdog_watchdogtimer_obj_t *self, watchdog_w
         }
         nrfx_wdt_enable(&wdt);
         nrfx_wdt_feed(&wdt);
-    } else if (current_mode == WATCHDOGMODE_RESET) {
+    } else if (new_mode == WATCHDOGMODE_NONE && current_mode == WATCHDOGMODE_RESET) {
         // raise exception on attempt to set mode back from RESET to None
         mp_raise_RuntimeError(MP_ERROR_TEXT("WatchDogTimer cannot be deinitialized once mode is set to RESET"));
 
